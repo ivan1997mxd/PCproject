@@ -77,7 +77,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def startRecord(self):
         # keep_process = True
         self.stop.setEnabled(True)
-        self.start.setText("录像中")
+        self.start.setText(u"录像中")
         codec = cv2.VideoWriter_fourcc(*'MJPG')
         fps = 25.0  # 指定写入帧率为25
         frameSize = (640, 480)  # 指定窗口大小
@@ -102,7 +102,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 print("Quit Process ")
                 break
-        print("The display and video write tasks take {} ms".format(stop_t))
+        # print("The display and video write tasks take {} ms".format(stop_t))
 
     def setLive(self):
         if not self.timer_camera.isActive():
@@ -115,12 +115,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #                     pass
             else:
                 self.timer_camera.start(30)
-
+                self.start.setEnabled(True)
                 self.live.setText(u'关闭相机')
         else:
             self.timer_camera.stop()
             self.cap.release()
             self.video.clear()
+            self.start.setEnabled(False)
+            self.stop.setEnabled(False)
+            self.fileName = ""
+            self.start.setText(u"开始录像")
             self.live.setText(u'打开相机')
 
     def show_camera(self):
