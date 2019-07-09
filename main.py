@@ -1,35 +1,42 @@
 import os
+import random
 import sys
-import cv2
-import math
-
-from PyQt5 import QtCore, QtWidgets, QtGui
 import time
 
-from PyQt5.QtCore import QThread, pyqtSignal
-from PyQt5.QtGui import QImage
-
+import cv2
+import math
+from PyQt5 import QtCore, QtWidgets, QtGui, QtMultimedia
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QLineEdit, QInputDialog
+from PyQt5.QtMultimedia import *
+from live import VideoBox
 from login import Ui_Form
 from view.mainwindow2 import Ui_MainWindow
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QLineEdit, QInputDialog
+from aip import AipSpeech
+import pyttsx3
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+music_dir = current_dir + r'\music'
+
+music_files = os.listdir(music_dir)
 
 
 class LoginWindow(QMainWindow, Ui_Form):
     def __init__(self):
         super().__init__()
+        self.login = MainWindow()
         self.setupUi(self)
         self.pushButton.clicked.connect(self.login_click)
         print("Login window opened!")
 
     def login_click(self):
         self.hide()
-        self.login = MainWindow()
         self.login.show()
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
+        self.videoWidget = VideoBox()
         self.setupUi(self)
 
         self.timer_camera = QtCore.QTimer()
@@ -39,6 +46,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.x = 0
         self.fileName = ""
         self.switch = True
+        self.player = QtMultimedia.QMediaPlayer()
 
         self.yellowlight.clicked.connect(self.setYellow)
         self.greenlight.clicked.connect(self.setGreen)
@@ -48,7 +56,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.start.clicked.connect(self.setRecord)
         self.stop.clicked.connect(self.setStop)
         self.open.clicked.connect(self.setOpen)
+        self.send.clicked.connect(self.setSend)
         print("Main window opened!")
+
+    def setSend(self):
+        content = self.input.text()
+        if content.strip():
+            self.output.append(content)
+            engine = pyttsx3.init()
+            engine.setProperty("voice",
+                               "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ZH-CN_HUIHUI_11.0")
+            engine.say(content)
+            engine.runAndWait()
+            self.input.setText("")
+        else:
+            print("input is empty")
 
     def setStop(self):
         self.switch = False
@@ -58,14 +80,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stop.setEnabled(False)
 
     def setOpen(self):
-        openfile_name = QFileDialog.getOpenFileName(self, '选择文件', '', 'Video files(*.avi , *.mp4)')
-        print(openfile_name)
-        openVideo = cv2.VideoCapture(openfile_name[0])
-        while openVideo.isOpened():
-            ret, frame = openVideo.read()
-            file = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            fileImage = QtGui.QImage(file.data, file.shape[1], file.shape[0], QtGui.QImage.Format_RGB888)
-            self.video.setPixmap(QtGui.QPixmap.fromImage(fileImage))
+        file_, okPressed = QFileDialog.getOpenFileName(self,
+                                                       "选取文件",
+                                                       "",
+                                                       "Video files(*.avi , *.mp4)")  # 设置文件扩展名过滤,注意用双分号间隔
+        if okPressed and file_ != '':
+            self.videoWidget.set_video(file_, VideoBox.VIDEO_TYPE_OFFLINE, False)
+            self.videoWidget.show()
 
     def setRecord(self):
         value, okPressed = QInputDialog.getText(self, "输入标题", "请输入视频名称(只有英文):", QLineEdit.Normal, "myVideo.avi")
