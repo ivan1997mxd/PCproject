@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1093</width>
+    <height>881</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#video{
+background:#000;
+border:1px solid #000;
+}
+#photo{
+background:#fff;
+border:1px solid #000;
+}
+#info{
+background:#fff;
+border:1px solid #000;
+}
+#videoWindow{
+background:#fff;
+border:1px solid #000;
+}
+#browser{
+background:#fff;
+border:1px solid #000;
+}
+#printer{
+background:#fff;
+border:1px solid #000;
+}
+#voice{
+background:#fff;
+border:1px solid #000;
+}
+#lights{
+background:#fff;
+border:1px solid #000;
+}
+#status{
+background:#fff;
+border:1px solid #000;
+}
+#redlight{
+background:#cc0000;
+}
+#yellowlight{
+background:#ffff00;
+}
+#greenlight{
+background:#00AA00;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="3" rowspan="2" colspan="2">
+     <widget class="QWidget" name="videoWindow" native="true">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="1" column="4">
+        <widget class="QPushButton" name="stop">
+         <property name="text">
+          <string>结束录制</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="4">
+        <widget class="QLabel" name="video">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QPushButton" name="search">
+         <property name="text">
+          <string>浏览</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QPushButton" name="open">
+         <property name="text">
+          <string>打开文件</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1" colspan="2">
+        <widget class="QPushButton" name="live">
+         <property name="text">
+          <string>开启相机</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1" colspan="2">
+        <widget class="QLineEdit" name="lineEdit"/>
+       </item>
+       <item row="1" column="3">
+        <widget class="QPushButton" name="start">
+         <property name="text">
+          <string>开始录制</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="3" colspan="2">
+     <widget class="QWidget" name="browser" native="true"/>
+    </item>
+    <item row="3" column="4">
+     <widget class="QWidget" name="status" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <widget class="QLabel" name="printerLabel">
+         <property name="text">
+          <string>打印机状态：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="printerStatus">
+         <property name="text">
+          <string>在线</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lightsLabel">
+         <property name="text">
+          <string>指示灯状态：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="lightStatus">
+         <property name="text">
+          <string>在线</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="internetLabel">
+         <property name="text">
+          <string>网络状态：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="internetStatus">
+         <property name="text">
+          <string>在线</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="serverLabel">
+         <property name="text">
+          <string>服务器状态：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="serverStatus">
+         <property name="text">
+          <string>在线</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QPushButton" name="fresh">
+         <property name="text">
+          <string>刷新</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="3" column="3">
+     <widget class="QWidget" name="lights" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="redlight">
+         <property name="text">
+          <string>红灯</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="yellowlight">
+         <property name="text">
+          <string>黄灯</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="greenlight">
+         <property name="text">
+          <string>绿灯</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QWidget" name="photo" native="true"/>
+    </item>
+    <item row="0" column="4">
+     <widget class="QWidget" name="info" native="true"/>
+    </item>
+    <item row="3" column="1" colspan="2">
+     <widget class="QWidget" name="voice" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1093</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionexit"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionrecord">
+   <property name="text">
+    <string>record</string>
+   </property>
+  </action>
+  <action name="actionopen">
+   <property name="text">
+    <string>open</string>
+   </property>
+  </action>
+  <action name="actionlive">
+   <property name="text">
+    <string>live</string>
+   </property>
+  </action>
+  <action name="actionexit">
+   <property name="text">
+    <string>exit</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

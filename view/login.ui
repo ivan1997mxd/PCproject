@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>login</class>
+ <widget class="QWidget" name="login">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>756</width>
+    <height>470</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>登录</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#login{
+background:url(:/image/bg.jpg);
+}
+QFrame{
+background:rgba(0,0,0,0.5);
+}
+#loginBtn{
+background:#03a9f4;
+color:#fff;
+border-radius:15px;
+font-size:22px;
+}
+#faceBtn{
+background:transparent;
+font-size:18px;
+color:#fff;
+font-size:22px;
+}
+#username{
+border-radius:15px;
+color:#03a9f4;
+font-size:22px;
+}
+#password{
+border-radius:15px;
+color:#03a9f4;
+font-size:22px;
+}
+#title{
+color:#fff;
+background:transparent;
+font-size:24px;
+}
+</string>
+  </property>
+  <widget class="QFrame" name="UI">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>50</y>
+     <width>581</width>
+     <height>371</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QPushButton" name="loginBtn">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>300</y>
+      <width>541</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Log in</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="username">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>541</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="placeholderText">
+     <string>Username</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="password">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>170</y>
+      <width>541</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="echoMode">
+     <enum>QLineEdit::Password</enum>
+    </property>
+    <property name="placeholderText">
+     <string>Password</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="title">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>30</y>
+      <width>261</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Welcome, Please Log in</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="faceBtn">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>250</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>人脸登录</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>loginBtn</sender>
+   <signal>clicked()</signal>
+   <receiver>login</receiver>
+   <slot>login_button_click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>363</x>
+     <y>384</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>727</x>
+     <y>378</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>login_button_click()</slot>
+ </slots>
+</ui>

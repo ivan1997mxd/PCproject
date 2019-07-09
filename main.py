@@ -1,17 +1,16 @@
 import os
-import random
 import sys
 import time
-
+import pymysql
 import cv2
 import math
 from PyQt5 import QtCore, QtWidgets, QtGui, QtMultimedia
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QLineEdit, QInputDialog
-from PyQt5.QtMultimedia import *
+from PyQt5.QtCore import QUrl
+from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QLineEdit, QInputDialog, QMessageBox
 from live import VideoBox
-from login import Ui_Form
+from view.login import *
 from view.mainwindow2 import Ui_MainWindow
-from aip import AipSpeech
 import pyttsx3
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -20,17 +19,33 @@ music_dir = current_dir + r'\music'
 music_files = os.listdir(music_dir)
 
 
-class LoginWindow(QMainWindow, Ui_Form):
+class LoginWindow(QMainWindow, Ui_login):
     def __init__(self):
         super().__init__()
+
+        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.myCursor = self.connection.cursor()
         self.login = MainWindow()
         self.setupUi(self)
-        self.pushButton.clicked.connect(self.login_click)
+        self.loginBtn.clicked.connect(self.login_click)
         print("Login window opened!")
 
-    def login_click(self):
-        self.hide()
-        self.login.show()
+    def login_click(self, event):
+        name = self.username.text()
+        pwd = self.password.text()
+        sql = "SELECT * FROM users where username= %s and password= %s"
+        result = self.myCursor.execute(sql, [name, pwd])
+        if name != "" and pwd != "":
+            if result:
+                QMessageBox.information(self, "恭喜," + name, "登陆成功", QMessageBox.Ok)
+                self.hide()
+                self.login.show()
+            else:
+                QMessageBox.information(self, "错误", "用户名或密码错误", QMessageBox.Ok)
+                self.username.setText("")
+                self.password.setText("")
+        else:
+            QMessageBox.information(self, "错误", "用户名和密码不能为空", QMessageBox.Ok)
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -48,6 +63,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.switch = True
         self.player = QtMultimedia.QMediaPlayer()
 
+        self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
+        self.browserLayout.setObjectName("BrowserLayout")
+        self.browser = QWebEngineView()
+        url = 'https://www.baidu.com/'  # http://192.168.0.20:4200
+        # 指定打开界面的 URL
+        self.browser.setUrl(QUrl(url))
+        self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
+
+        # # 树莓派
+        # self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
+        # self.browserLayout.setObjectName("BrowserLayout")
+        # self.browser = QWebView()
+        # url = 'http://192.168.0.20:4200'
+        # # 指定打开界面的 URL
+        # self.browser.setUrl(QUrl(url))
+        # self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
+
         self.yellowlight.clicked.connect(self.setYellow)
         self.greenlight.clicked.connect(self.setGreen)
         self.redlight.clicked.connect(self.setRed)
@@ -63,12 +95,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         content = self.input.text()
         if content.strip():
             self.output.append(content)
+            self.input.setText("")
             engine = pyttsx3.init()
             engine.setProperty("voice",
                                "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ZH-CN_HUIHUI_11.0")
             engine.say(content)
             engine.runAndWait()
-            self.input.setText("")
+
         else:
             print("input is empty")
 
