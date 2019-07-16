@@ -1,31 +1,54 @@
-#coding=utf8
-import sys
+from optparse import OptionParser
+import os
+import re
+import json
 
-from blizzardui.pyqt.QtGui import (
-    QApplication, QPixmap)
 
-from blizzardui.widgets import Chatroom
+def main():
+    try:
+        parser = OptionParser(usage="%prog [options]")
+        reg_result = re.compile('\[(.*)\]')
+        # add option
+        parser.add_option("-m", "--machine", action="store", type="string", dest="machine",
+                          help="the machine to be check")
+        parser.add_option("-f", "--file", action="store", type="string", dest="file", help="the file with machine list")
+        parser.add_option("-n", "--noah_path", action="store", type="string", dest="noah", help="the bns path or group")
+        (options, args) = parser.parse_args()
 
-# 常规的启动动作就不多加说明
-app = QApplication(sys.argv)
-# 两个 NickName 定义了来往的用户昵称
-# headImage 应当为一个 46*46 的 QPixmap ，当然如果过大也会被自动截取
-mainWindow = Chatroom(toNickName=u'好友 A', fromNickName='LittleCoder',
-    headImage=QPixmap('src/chatroom/images/header/default_image.png'))
-mainWindow.show()
+        result = ""
+        if options.machine:
+            options.machine = options.machine.replace(".baidu.com", "")
+            result = os.popen(
+                "meta-query entity host " + options.machine + " -f sysSuit,memTotal,diskTotal,cpuFrequency,cpuPhysicalCores,netIdc,status -j").read()
+        elif options.file:
+            result = os.popen(
+                "meta-query entity host -f sysSuit,memTotal,diskTotal,cpuFrequency,cpuPhysicalCores,netIdc,status -F " + options.file + " -j").read()
+        elif options.noah:
+            result = os.popen(
+                "get_instance_by_service " + options.noah + " |meta-query entity host -f sysSuit,memTotal,diskTotal,cpuFrequency,cpuPhysicalCores,netIdc,status -F -j").read()
+        else:
+            return
 
-# 当你输入一些内容并使用 Enter 时，将会调用该方法
-def fn(msg):
-    mainWindow.add_msg(msg)
-    print(unicode(msg))
-mainWindow.messageReceived.connect(fn)
+        result = json.loads(result)
+        print
+        "%-*s%-*s%-*s%-*s%-*s%-*s" % (40, "Name", 10, "CPU", 10, "memery", 10, "disk", 10, "IDC", 10, "status")
+        for item in result:
+            if item['Values']['cpuFrequency'] != "null":
+                item['Values']['cpuFrequency'] = str(float(item['Values']['cpuFrequency']) / 1000.0)[0:3]
+            else:
+                item['Values']['cpuFrequency'] = "0"
+            item['Values']['diskTotal'] = str(float(item['Values']['diskTotal']) / 1000000000.0)[0:5]
+            item['Values']['memTotal'] = str(float(item['Values']['memTotal']) / 1024 / 1000.0)[0:5]
 
-# 通过 add_msg ，可以向历史记录中加入消息
-# 如果 isSend 设为 False ，将会判定为是收到的消息
-mainWindow.add_msg('yo' * 50)
-mainWindow.add_msg('yo', isSend=False)
-mainWindow.add_msg('yo')
-# 通过 set_footer ，可以设置页尾的内容
-mainWindow.set_footer(u'最后登录')
+            print
+            "%-*s%-*s%-*s%-*s%-*s%-*s" % (
+                40, item['Name'], 10, item['Values']['cpuFrequency'] + " x" + item['Values']['cpuPhysicalCores'], 10,
+                item['Values']['memTotal'] + "G", 10, item['Values']['diskTotal'] + "T", 10, item['Values']['netIdc'],
+                10,
+                item['Values']['status'])
+    except Exception as e:
+        return
 
-sys.exit(app.exec_())
+
+if __name__ == "__main__":
+    main()

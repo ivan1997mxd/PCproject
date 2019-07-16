@@ -9,6 +9,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import resource
 
+
 class Ui_login(object):
     def setupUi(self, login):
         login.setObjectName("login")
@@ -27,6 +28,12 @@ class Ui_login(object):
                             "font-size:22px;\n"
                             "}\n"
                             "#faceBtn{\n"
+                            "background:transparent;\n"
+                            "font-size:18px;\n"
+                            "color:#fff;\n"
+                            "font-size:22px;\n"
+                            "}\n"
+                            "#faceRegister{\n"
                             "background:transparent;\n"
                             "font-size:18px;\n"
                             "color:#fff;\n"
@@ -68,6 +75,9 @@ class Ui_login(object):
         self.title = QtWidgets.QLabel(self.UI)
         self.title.setGeometry(QtCore.QRect(150, 30, 261, 31))
         self.title.setObjectName("title")
+        self.faceRegister = QtWidgets.QPushButton(self.UI)
+        self.faceRegister.setGeometry(QtCore.QRect(20, 250, 93, 28))
+        self.faceRegister.setObjectName("faceRegister")
         self.faceBtn = QtWidgets.QPushButton(self.UI)
         self.faceBtn.setGeometry(QtCore.QRect(450, 250, 93, 28))
         self.faceBtn.setObjectName("faceBtn")
@@ -83,4 +93,4 @@ class Ui_login(object):
         self.password.setPlaceholderText(_translate("login", "Password"))
         self.title.setText(_translate("login", "Welcome, Please Log in"))
         self.faceBtn.setText(_translate("login", "人脸登录"))
-
+        self.faceRegister.setText(_translate("login", "账号注册"))

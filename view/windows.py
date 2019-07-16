@@ -1,314 +1,96 @@
-# -*- coding: utf-8 -*-
+from PyQt5.QtGui import QFont, QTextDocument, QTextCursor
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QSizePolicy, QAction, QDialog
+from PyQt5.QtPrintSupport import QPrinter, QPrintDialog, QPrintPreviewDialog
+import sys
 
-# Form implementation generated from reading ui file 'mainwindow2.ui'
-#
-# Created by: PyQt5 UI code generator 5.12.1
-#
-# WARNING! All changes made in this file will be lost!
+the_text = """
+《描写雪的诗句》赏析
+不知庭霰今朝落，疑是林花昨夜开《苑中遇雪》
+忽如一夜春风来，千树万树梨花开《白雪歌送武》
+白雪却嫌春色晚，故穿庭树作飞花《春雪》
+雪似梅花，梅花似雪。似和不似都奇绝《踏莎行》
+千峰笋石千株玉，万树松萝万朵银《南秦雪》
+六出飞花入户时，坐看青竹变琼枝《对雪》
+地白风色寒，雪花大如手《嘲王历阳不肯饮酒》
+燕山雪花大如席，片片吹落轩辕台《北风行》
+白雪纷纷何所似？撒盐空中差可拟《咏雪联句》
+才见岭头云似盖，已惊岩下雪如尘《南秦雪》
+"""
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+
+class MainWindow(QMainWindow):
+    def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent)
+        self.setWindowTitle("打印功能")
+
+        # 创建文本框
+        self.label = QLabel()
+        self.label.setFont(QFont("Roman times", 12, QFont.Bold))
+        self.label.setText(the_text)
+        self.setCentralWidget(self.label)
+
+        # 创建菜单栏
+        self.createMenus()
+
+    def createMenus(self):
+        # 创建动作一
+        self.printAction1 = QAction(self.tr("打印无预留"), self)
+        self.printAction1.triggered.connect(self.on_printAction1_triggered)
+
+        # 创建动作二
+        self.printAction2 = QAction(self.tr("打印有预留"), self)
+        self.printAction2.triggered.connect(self.on_printAction2_triggered)
+
+        # 创建动作三
+        self.printAction3 = QAction(self.tr("直接打印"), self)
+        self.printAction3.triggered.connect(self.on_printAction3_triggered)
+
+        # 创建动作四
+        self.printAction4 = QAction(self.tr("打印到PDF"), self)
+        self.printAction4.triggered.connect(self.on_printAction4_triggered)
+
+        # 创建菜单，添加动作
+        self.printMenu = self.menuBar().addMenu(self.tr("打印"))
+        self.printMenu.addAction(self.printAction1)
+        self.printMenu.addAction(self.printAction2)
+        self.printMenu.addAction(self.printAction3)
+        self.printMenu.addAction(self.printAction4)
+
+    # 动作一：打印，无预览
+    def on_printAction1_triggered(self):
+        printer = QPrinter()
+        printDialog = QPrintDialog(printer, self)
+        if printDialog.exec_() == QDialog.Accepted:
+            self.handlePaintRequest(printer)
+
+    # 动作二：打印，有预览
+    def on_printAction2_triggered(self):
+        dialog = QPrintPreviewDialog()
+        dialog.paintRequested.connect(self.handlePaintRequest)
+        dialog.exec_()
+
+    # 动作三：直接打印
+    def on_printAction3_triggered(self):
+        printer = QPrinter()
+        self.handlePaintRequest(printer)
+
+    # 动作四：打印到pdf
+    def on_printAction4_triggered(self):
+        printer = QPrinter()
+        printer.setOutputFormat(QPrinter.PdfFormat)
+        printer.setOutputFileName("D:/pdf打印测试.pdf")
+        self.handlePaintRequest(printer)
+
+    ## 打印函数
+    def handlePaintRequest(self, printer):
+        document = QTextDocument()
+        cursor = QTextCursor(document)
+        cursor.insertText(self.label.text())
+        document.print(printer)
 
 
-class Ui_MainWindow(object):
-    def setupUi(self, MainWindow):
-        MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1093, 881)
-        MainWindow.setStyleSheet("#photo{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#info{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#video{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#browser{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#printer{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#voice{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#lights{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#status{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#redlight{\n"
-                                 "background:#cc0000;\n"
-                                 "}\n"
-                                 "#yellowlight{\n"
-                                 "background:#ffff00;\n"
-                                 "}\n"
-                                 "#greenlight{\n"
-                                 "background:#00AA00;\n"
-                                 "}\n"
-                                 "")
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
-        self.gridLayout.setObjectName("gridLayout")
-        self.voice = QtWidgets.QWidget(self.centralwidget)
-        self.voice.setObjectName("voice")
-        self.gridLayout.addWidget(self.voice, 3, 1, 1, 1)
-        self.videoWindow = QtWidgets.QWidget(self.centralwidget)
-        self.videoWindow.setObjectName("videoWindow")
-        self.gridLayout_3 = QtWidgets.QGridLayout(self.videoWindow)
-        self.gridLayout_3.setObjectName("gridLayout_3")
-        self.stotp = QtWidgets.QPushButton(self.videoWindow)
-        self.stotp.setObjectName("stotp")
-        self.gridLayout_3.addWidget(self.stotp, 1, 2, 1, 1)
-        self.start = QtWidgets.QPushButton(self.videoWindow)
-        self.start.setObjectName("start")
-        self.gridLayout_3.addWidget(self.start, 1, 1, 1, 1)
-        self.open = QtWidgets.QPushButton(self.videoWindow)
-        self.open.setObjectName("open")
-        self.gridLayout_3.addWidget(self.open, 1, 3, 1, 1)
-        self.live = QtWidgets.QPushButton(self.videoWindow)
-        self.live.setCheckable(True)
-        self.live.setObjectName("live")
-        self.gridLayout_3.addWidget(self.live, 1, 0, 1, 1)
-        self.video = QtWidgets.QLabel(self.videoWindow)
-        self.video.setText("")
-        self.video.setObjectName("video")
-        self.gridLayout_3.addWidget(self.video, 0, 0, 1, 4)
-        self.gridLayout.addWidget(self.videoWindow, 1, 3, 2, 2)
-        self.browser = QtWidgets.QWidget(self.centralwidget)
-        self.browser.setObjectName("browser")
-        self.gridLayout.addWidget(self.browser, 0, 1, 3, 2)
-        self.printer = QtWidgets.QWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.printer.sizePolicy().hasHeightForWidth())
-        self.printer.setSizePolicy(sizePolicy)
-        self.printer.setObjectName("printer")
-        self.formLayout = QtWidgets.QFormLayout(self.printer)
-        self.formLayout.setObjectName("formLayout")
-        self.label = QtWidgets.QLabel(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        self.label.setFont(font)
-        self.label.setObjectName("label")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.label)
-        self.titleLabel = QtWidgets.QLabel(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.titleLabel.sizePolicy().hasHeightForWidth())
-        self.titleLabel.setSizePolicy(sizePolicy)
-        self.titleLabel.setObjectName("titleLabel")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.titleLabel)
-        self.titleEdit = QtWidgets.QLineEdit(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.titleEdit.sizePolicy().hasHeightForWidth())
-        self.titleEdit.setSizePolicy(sizePolicy)
-        self.titleEdit.setObjectName("titleEdit")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.titleEdit)
-        self.typeLabel = QtWidgets.QLabel(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.typeLabel.sizePolicy().hasHeightForWidth())
-        self.typeLabel.setSizePolicy(sizePolicy)
-        self.typeLabel.setObjectName("typeLabel")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.typeLabel)
-        self.printType = QtWidgets.QComboBox(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.printType.sizePolicy().hasHeightForWidth())
-        self.printType.setSizePolicy(sizePolicy)
-        self.printType.setObjectName("printType")
-        self.printType.addItem("")
-        self.printType.addItem("")
-        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.printType)
-        self.boldLabel = QtWidgets.QLabel(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.boldLabel.sizePolicy().hasHeightForWidth())
-        self.boldLabel.setSizePolicy(sizePolicy)
-        self.boldLabel.setObjectName("boldLabel")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.boldLabel)
-        self.bold = QtWidgets.QCheckBox(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.bold.sizePolicy().hasHeightForWidth())
-        self.bold.setSizePolicy(sizePolicy)
-        self.bold.setObjectName("bold")
-        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.bold)
-        self.remark = QtWidgets.QLabel(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.remark.sizePolicy().hasHeightForWidth())
-        self.remark.setSizePolicy(sizePolicy)
-        self.remark.setObjectName("remark")
-        self.formLayout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.remark)
-        self.remarkEdit = QtWidgets.QLineEdit(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.remarkEdit.sizePolicy().hasHeightForWidth())
-        self.remarkEdit.setSizePolicy(sizePolicy)
-        self.remarkEdit.setObjectName("remarkEdit")
-        self.formLayout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.remarkEdit)
-        self.context = QtWidgets.QLabel(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.context.sizePolicy().hasHeightForWidth())
-        self.context.setSizePolicy(sizePolicy)
-        self.context.setObjectName("context")
-        self.formLayout.setWidget(5, QtWidgets.QFormLayout.LabelRole, self.context)
-        self.confirm = QtWidgets.QPushButton(self.printer)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.confirm.sizePolicy().hasHeightForWidth())
-        self.confirm.setSizePolicy(sizePolicy)
-        self.confirm.setObjectName("confirm")
-        self.formLayout.setWidget(6, QtWidgets.QFormLayout.FieldRole, self.confirm)
-        self.plainTextEdit = QtWidgets.QPlainTextEdit(self.printer)
-        self.plainTextEdit.setObjectName("plainTextEdit")
-        self.formLayout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.plainTextEdit)
-        self.gridLayout.addWidget(self.printer, 3, 2, 1, 1)
-        self.status = QtWidgets.QWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.status.sizePolicy().hasHeightForWidth())
-        self.status.setSizePolicy(sizePolicy)
-        self.status.setStyleSheet("")
-        self.status.setObjectName("status")
-        self.gridLayout_2 = QtWidgets.QGridLayout(self.status)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.printerLabel = QtWidgets.QLabel(self.status)
-        self.printerLabel.setObjectName("printerLabel")
-        self.gridLayout_2.addWidget(self.printerLabel, 0, 0, 1, 1)
-        self.printerStatus = QtWidgets.QLabel(self.status)
-        self.printerStatus.setObjectName("printerStatus")
-        self.gridLayout_2.addWidget(self.printerStatus, 0, 1, 1, 1)
-        self.lightsLabel = QtWidgets.QLabel(self.status)
-        self.lightsLabel.setObjectName("lightsLabel")
-        self.gridLayout_2.addWidget(self.lightsLabel, 1, 0, 1, 1)
-        self.lightStatus = QtWidgets.QLabel(self.status)
-        self.lightStatus.setObjectName("lightStatus")
-        self.gridLayout_2.addWidget(self.lightStatus, 1, 1, 1, 1)
-        self.internetLabel = QtWidgets.QLabel(self.status)
-        self.internetLabel.setObjectName("internetLabel")
-        self.gridLayout_2.addWidget(self.internetLabel, 2, 0, 1, 1)
-        self.internetStatus = QtWidgets.QLabel(self.status)
-        self.internetStatus.setObjectName("internetStatus")
-        self.gridLayout_2.addWidget(self.internetStatus, 2, 1, 1, 1)
-        self.serverLabel = QtWidgets.QLabel(self.status)
-        self.serverLabel.setObjectName("serverLabel")
-        self.gridLayout_2.addWidget(self.serverLabel, 3, 0, 1, 1)
-        self.serverStatus = QtWidgets.QLabel(self.status)
-        self.serverStatus.setObjectName("serverStatus")
-        self.gridLayout_2.addWidget(self.serverStatus, 3, 1, 1, 1)
-        self.fresh = QtWidgets.QPushButton(self.status)
-        self.fresh.setObjectName("fresh")
-        self.gridLayout_2.addWidget(self.fresh, 4, 0, 1, 1)
-        self.gridLayout.addWidget(self.status, 3, 4, 1, 1)
-        self.lights = QtWidgets.QWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lights.sizePolicy().hasHeightForWidth())
-        self.lights.setSizePolicy(sizePolicy)
-        self.lights.setObjectName("lights")
-        self.verticalLayout = QtWidgets.QVBoxLayout(self.lights)
-        self.verticalLayout.setObjectName("verticalLayout")
-        self.redlight = QtWidgets.QPushButton(self.lights)
-        self.redlight.setObjectName("redlight")
-        self.verticalLayout.addWidget(self.redlight)
-        self.yellowlight = QtWidgets.QPushButton(self.lights)
-        self.yellowlight.setObjectName("yellowlight")
-        self.verticalLayout.addWidget(self.yellowlight)
-        self.greenlight = QtWidgets.QPushButton(self.lights)
-        self.greenlight.setObjectName("greenlight")
-        self.verticalLayout.addWidget(self.greenlight)
-        self.gridLayout.addWidget(self.lights, 3, 3, 1, 1)
-        self.photo = QtWidgets.QWidget(self.centralwidget)
-        self.photo.setObjectName("photo")
-        self.gridLayout.addWidget(self.photo, 0, 3, 1, 1)
-        self.info = QtWidgets.QWidget(self.centralwidget)
-        self.info.setObjectName("info")
-        self.gridLayout.addWidget(self.info, 0, 4, 1, 1)
-        MainWindow.setCentralWidget(self.centralwidget)
-        self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1093, 26))
-        self.menubar.setObjectName("menubar")
-        self.menu = QtWidgets.QMenu(self.menubar)
-        self.menu.setObjectName("menu")
-        MainWindow.setMenuBar(self.menubar)
-        self.statusbar = QtWidgets.QStatusBar(MainWindow)
-        self.statusbar.setObjectName("statusbar")
-        MainWindow.setStatusBar(self.statusbar)
-        self.actionrecord = QtWidgets.QAction(MainWindow)
-        self.actionrecord.setObjectName("actionrecord")
-        self.actionopen = QtWidgets.QAction(MainWindow)
-        self.actionopen.setObjectName("actionopen")
-        self.actionlive = QtWidgets.QAction(MainWindow)
-        self.actionlive.setObjectName("actionlive")
-        self.menu.addAction(self.actionlive)
-        self.menu.addAction(self.actionrecord)
-        self.menu.addAction(self.actionopen)
-        self.menubar.addAction(self.menu.menuAction())
-
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.stotp.setText(_translate("MainWindow", "结束录制"))
-        self.start.setText(_translate("MainWindow", "开始录制"))
-        self.open.setText(_translate("MainWindow", "打开文件"))
-        self.live.setText(_translate("MainWindow", "开启相机"))
-        self.label.setText(_translate("MainWindow", "打印任务"))
-        self.titleLabel.setText(_translate("MainWindow", "标题:"))
-        self.typeLabel.setText(_translate("MainWindow", "打印类型:"))
-        self.printType.setItemText(0, _translate("MainWindow", "单面"))
-        self.printType.setItemText(1, _translate("MainWindow", "双面"))
-        self.boldLabel.setText(_translate("MainWindow", "是否加粗"))
-        self.remark.setText(_translate("MainWindow", "备注:"))
-        self.context.setText(_translate("MainWindow", "内容:"))
-        self.confirm.setText(_translate("MainWindow", "确认"))
-        self.printerLabel.setText(_translate("MainWindow", "打印机状态："))
-        self.printerStatus.setText(_translate("MainWindow", "在线"))
-        self.lightsLabel.setText(_translate("MainWindow", "指示灯状态："))
-        self.lightStatus.setText(_translate("MainWindow", "在线"))
-        self.internetLabel.setText(_translate("MainWindow", "网络状态："))
-        self.internetStatus.setText(_translate("MainWindow", "在线"))
-        self.serverLabel.setText(_translate("MainWindow", "服务器状态："))
-        self.serverStatus.setText(_translate("MainWindow", "在线"))
-        self.fresh.setText(_translate("MainWindow", "刷新"))
-        self.redlight.setText(_translate("MainWindow", "红灯"))
-        self.yellowlight.setText(_translate("MainWindow", "黄灯"))
-        self.greenlight.setText(_translate("MainWindow", "绿灯"))
-        self.menu.setTitle(_translate("MainWindow", "视频"))
-        self.actionrecord.setText(_translate("MainWindow", "record"))
-        self.actionopen.setText(_translate("MainWindow", "open"))
-        self.actionlive.setText(_translate("MainWindow", "live"))
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    main = MainWindow()
+    main.show()
+    sys.exit(app.exec_())

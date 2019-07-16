@@ -30,7 +30,7 @@ border:1px solid #000;
 background:#fff;
 border:1px solid #000;
 }
-#browser{
+#browserWindow{
 background:#fff;
 border:1px solid #000;
 }
@@ -60,7 +60,7 @@ background:#ffff00;
 background:#00AA00;
 }
 #stuffPhoto{
-background:url(:/images/view/ivan1.jpg) no-repeat center center;
+background:url(:/images/ivan1.jpg) no-repeat center center;
 }
 </string>
   </property>
@@ -353,6 +353,9 @@ background:url(:/images/view/ivan1.jpg) no-repeat center center;
     <property name="title">
      <string>主页</string>
     </property>
+    <addaction name="actionhoem"/>
+    <addaction name="actionforward"/>
+    <addaction name="actionbackward"/>
    </widget>
    <widget class="QMenu" name="tsmiPrinterSet">
     <property name="title">
@@ -424,6 +427,21 @@ background:url(:/images/view/ivan1.jpg) no-repeat center center;
   <action name="tsmi_weightconfig">
    <property name="text">
     <string>配置</string>
+   </property>
+  </action>
+  <action name="actionhoem">
+   <property name="text">
+    <string>首页</string>
+   </property>
+  </action>
+  <action name="actionforward">
+   <property name="text">
+    <string>前进</string>
+   </property>
+  </action>
+  <action name="actionbackward">
+   <property name="text">
+    <string>返回</string>
    </property>
   </action>
  </widget>

@@ -31,6 +31,8 @@
           <option value="Video.none" />
           <option value="PyQt5.QtCore.timeout.connect" />
           <option value="resource_main" />
+          <option value="PyQt5.QtPrintSupport.paintRequested.connect" />
+          <option value="main.QDialog" />
         </list>
       </option>
     </inspection_tool>

@@ -1,22 +1,172 @@
 import os
+import numpy as np
+from PIL import Image
 import sys
 import time
 import pymysql
 import cv2
 import math
-from PyQt5 import QtCore, QtWidgets, QtGui, QtMultimedia
-from PyQt5.QtCore import QUrl
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QLineEdit, QInputDialog, QMessageBox
+import socket
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtPrintSupport import *
+from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtWidgets import *
 from live import VideoBox
 from view.login import *
+from view.setting import *
+from view.signup import *
 from view.mainwindow2 import Ui_MainWindow
 import pyttsx3
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-music_dir = current_dir + r'\music'
 
-music_files = os.listdir(music_dir)
+class SignWindow(QMainWindow, Ui_signup):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.photoShow = ""
+        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.myCursor = self.connection.cursor()
+
+        self.signBtn.clicked.connect(self.signup)
+        self.pickBtn.clicked.connect(self.pickPhoto)
+        self.shotBtn.clicked.connect(self.shotPhoto)
+
+    def pickPhoto(self):
+        imgName, imgType = QFileDialog.getOpenFileName(self, "打开图片", "", "*.jpg;;*.png;;All Files(*)")
+        jpg = QtGui.QPixmap(imgName).scaled(self.photo.width(), self.photo.height())
+        self.photo.setPixmap(jpg)
+        self.photoShow = imgName
+
+    def shotPhoto(self):
+        cap = cv2.VideoCapture(0)
+        while True:
+            ret, frame = cap.read()
+            k = cv2.waitKey(1)
+            if k == ord('s'):
+                cv2.imwrite('new.jpg', frame)
+                break
+            cv2.imshow("capture", frame)
+        cap.release()
+        cv2.destroyAllWindows()
+        jpg = QtGui.QPixmap("new.jpg").scaled(self.photo.width(), self.photo.height())
+        self.photo.setPixmap(jpg)
+        self.photoShow = "new.jpg"
+
+    def signup(self):
+        name = self.username.text()
+        pwd = self.password.text()
+        age = self.ageBox.value()
+        job = self.jobBox.currentText()
+        fp = open(self.photoShow, "rb")
+        photo = fp.read()
+        print(name, pwd, age, job)
+        sql = "INSERT INTO users(user_name, user_pwd, user_age, user_job, user_photo) VALUES (%s,%s,%s,%s,%s)"
+        if name != "" and pwd != "":
+            result = self.myCursor.execute(sql, [name, pwd, age, job, photo])
+            self.connection.commit()
+            if result:
+                QMessageBox.information(self, "恭喜," + name, "用户创建成功", QMessageBox.Ok)
+                replay = QMessageBox.information(self, "欢迎用户" + name, "请问是否要开始人脸注册", QMessageBox.Yes | QMessageBox.No)
+                if replay == QMessageBox.Yes:
+                    self.face_register(name, pwd)
+                else:
+                    self.myCursor.close()
+                    self.connection.close()
+                    self.close()
+                    window.show()
+        else:
+            QMessageBox.information(self, "错误", "用户名和密码不能为空", QMessageBox.Ok)
+
+    def face_register(self, name, pwd):
+        cam = cv2.VideoCapture(0)
+        cam.set(3, 640)  # set video width
+        cam.set(4, 480)  # set video height
+
+        face_detector = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+        # For each person, enter one numeric face id
+        sql = "SELECT user_id FROM users where user_name= %s and user_pwd= %s"
+        self.myCursor.execute(sql, [name, pwd])
+        result = self.myCursor.fetchone()
+        userID = result[0]
+        print(userID)
+        face_id = userID
+
+        print("\n [INFO] Initializing face capture. Look the camera and wait ...")
+        # Initialize individual sampling face count
+        count = 0
+
+        while True:
+
+            ret, img = cam.read()
+            img = cv2.flip(img, 1)  # flip video image vertically
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            faces = face_detector.detectMultiScale(gray, 1.3, 5)
+
+            for (x, y, w, h) in faces:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                count += 1
+
+                # Save the captured image into the datasets folder
+                cv2.imwrite("dataset/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y + h, x:x + w])
+
+                cv2.imshow('image', img)
+
+            k = cv2.waitKey(100) & 0xff  # Press 'ESC' for exiting video
+            if k == 27:
+                break
+            elif count >= 30:  # Take 30 face sample and stop video
+                break
+
+        # Do a bit of cleanup
+        print("\n [INFO] Exiting Program and cleanup stuff")
+        cam.release()
+        cv2.destroyAllWindows()
+        QMessageBox.information(self, "人脸拍摄完毕", "一共拍摄：" + str(count) + "张", QMessageBox.Ok)
+        self.face_traning()
+
+    def face_traning(self):
+        path = 'dataset'
+
+        recognizer = cv2.face.LBPHFaceRecognizer_create()
+        detector = cv2.CascadeClassifier("haarcascade_frontalface_default.xml");
+
+        def getImagesAndLabels(path):
+
+            imagePaths = [os.path.join(path, f) for f in os.listdir(path)]
+            faceSamples = []
+            ids = []
+
+            for imagePath in imagePaths:
+
+                PIL_img = Image.open(imagePath).convert('L')  # convert it to grayscale
+                img_numpy = np.array(PIL_img, 'uint8')
+
+                id = int(os.path.split(imagePath)[-1].split(".")[1])
+                faces = detector.detectMultiScale(img_numpy)
+
+                for (x, y, w, h) in faces:
+                    faceSamples.append(img_numpy[y:y + h, x:x + w])
+                    ids.append(id)
+
+            return faceSamples, ids
+
+        print("\n [INFO] Training faces. It will take a few seconds. Wait ...")
+        QMessageBox.information(self, "处理中", "正在加载图片请稍后", QMessageBox.Ok)
+        faces, ids = getImagesAndLabels(path)
+        recognizer.train(faces, np.array(ids))
+
+        # Save the model into trainer/trainer.yml
+        recognizer.write('trainer/trainer.yml')  # recognizer.save() worked on Mac, but not on Pi
+
+        # Print the numer of faces trained and end program
+        print("\n [INFO] {0} faces trained. Exiting Program".format(len(np.unique(ids))))
+        QMessageBox.information(self, "处理完毕", "完成人脸注册", QMessageBox.Ok)
+        self.myCursor.close()
+        self.connection.close()
+        self.close()
+        window.show()
 
 
 class LoginWindow(QMainWindow, Ui_login):
@@ -25,21 +175,29 @@ class LoginWindow(QMainWindow, Ui_login):
 
         self.connection = pymysql.connect("localhost", "root", "root", "login")
         self.myCursor = self.connection.cursor()
-        self.login = MainWindow()
+        self.signWindow = SignWindow()
         self.setupUi(self)
+        self.ID = 0
         self.loginBtn.clicked.connect(self.login_click)
+        self.faceBtn.clicked.connect(self.face_recognition)
+        self.faceRegister.clicked.connect(self.register)
         print("Login window opened!")
 
-    def login_click(self, event):
+    def register(self):
+        self.signWindow.show()
+        self.close()
+
+    def login_click(self):
         name = self.username.text()
         pwd = self.password.text()
-        sql = "SELECT * FROM users where username= %s and password= %s"
-        result = self.myCursor.execute(sql, [name, pwd])
+
         if name != "" and pwd != "":
+            sql = "SELECT * FROM users where user_name= %s and user_pwd= %s"
+            result = self.myCursor.execute(sql, [name, pwd])
+            self.ID = self.myCursor.fetchone()[0]
             if result:
                 QMessageBox.information(self, "恭喜," + name, "登陆成功", QMessageBox.Ok)
-                self.hide()
-                self.login.show()
+                self.loginDone(name)
             else:
                 QMessageBox.information(self, "错误", "用户名或密码错误", QMessageBox.Ok)
                 self.username.setText("")
@@ -47,12 +205,198 @@ class LoginWindow(QMainWindow, Ui_login):
         else:
             QMessageBox.information(self, "错误", "用户名和密码不能为空", QMessageBox.Ok)
 
+    def loginDone(self, id):
+        hostname = socket.gethostname()
+        engine = pyttsx3.init()
+        engine.setProperty("voice",
+                           "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ZH-CN_HUIHUI_11.0")
+        content = id + ", 欢迎登录" + hostname + "号工作台，设备自检中，信号灯工作正常,1号打印机已联机，2号打印机已联机，称重设备已联机，祝你工作愉快！"
+        self.myCursor.close()
+        self.connection.close()
+        self.close()
+        mainWindow.show()
+        mainWindow.check()
+        engine.say(content)
+        engine.runAndWait()
+
+    def face_recognition(self):
+
+        result = True
+
+        recognizer = cv2.face.LBPHFaceRecognizer_create()
+        recognizer.read('trainer/trainer.yml')
+        cascadePath = "haarcascade_frontalface_default.xml"
+        faceCascade = cv2.CascadeClassifier(cascadePath)
+
+        font = cv2.FONT_HERSHEY_SIMPLEX
+
+        sql = "SELECT user_name,user_id FROM login.users"
+        self.myCursor.execute(sql)
+        names = []
+        ids = []
+        allResult = self.myCursor.fetchall()
+        for row in allResult:
+            names.append(row[0])
+            ids.append(row[1])
+        print(names)
+        print(ids)
+
+        # names related to ids: example ==> Marcelo: id=1,  etc
+        # names = ['None', 'Ivan', 'Paula', 'Ilza', 'Z', 'W']
+
+        # iniciate id counter
+        id = 0
+
+        # Initialize and start realtime video capture
+        cam = cv2.VideoCapture(0)
+        cam.set(3, 640)  # set video widht
+        cam.set(4, 480)  # set video height
+
+        # Define min window size to be recognized as a face
+        minW = 0.1 * cam.get(3)
+        minH = 0.1 * cam.get(4)
+
+        while result:
+
+            ret, img = cam.read()
+            img = cv2.flip(img, 1)  # Flip vertically
+
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+            faces = faceCascade.detectMultiScale(
+                gray,
+                scaleFactor=1.2,
+                minNeighbors=5,
+                minSize=(int(minW), int(minH)),
+            )
+
+            for (x, y, w, h) in faces:
+
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+                id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
+
+                # Check if confidence is less them 100 ==> "0" is perfect match
+                if confidence < 100:
+                    index = ids.index(id)
+                    self.ID = id
+                    id = names[index]
+                    confidence = "  {0}%".format(round(100 - confidence))
+                    reply = QMessageBox.information(self, "人脸识别成功,", "用户：" + id + ",请问是否要以此账号登录",
+                                                    QMessageBox.Yes | QMessageBox.No)
+                    if reply == QMessageBox.Yes:
+                        result = False
+
+                    else:
+                        continue
+                else:
+                    id = "unknown"
+                    confidence = "  {0}%".format(round(100 - confidence))
+
+                cv2.putText(img, str(id), (x + 5, y - 5), font, 1, (255, 255, 255), 2)
+                cv2.putText(img, str(confidence), (x + 5, y + h - 5), font, 1, (255, 255, 0), 1)
+
+            cv2.imshow('camera', img)
+
+            k = cv2.waitKey(10) & 0xff  # Press 'ESC' for exiting video
+            if k == 27:
+                break
+
+        # Do a bit of cleanup
+        print("\n [INFO] Exiting Program and cleanup stuff")
+        cam.release()
+        cv2.destroyAllWindows()
+        self.loginDone(id)
+
+
+class SettingWindow(QWidget, Ui_setting):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.myCursor = self.connection.cursor()
+        self.check()
+
+        self.print1 = QPrinter()
+        self.print2 = QPrinter()
+        self.print3 = QPrinter()
+        self.tagSetting.clicked.connect(self.tag_click)
+        self.reportSetting.clicked.connect(self.report_click)
+        self.invoiceSetting.clicked.connect(self.invoice_click)
+        self.save.clicked.connect(self.save_click)
+
+    def check(self):
+        hostname = socket.gethostname()
+        sql = 'SELECT tag_printer, report_printer, invoice_printer FROM printer WHERE printer_PC=%s'
+        result = self.myCursor.execute(sql, [hostname])
+        if result:
+            allPrinters = self.myCursor.fetchall()
+            for row in allPrinters:
+                self.tagEdit.setText(row[0])
+                self.reportEdit.setText(row[1])
+                self.invoiceEdit.setText(row[2])
+
+    def save_click(self):
+        tag_printer = self.print1.printerName()
+        report_printer = self.print3.printerName()
+        invoice_printer = self.print2.printerName()
+        hostname = socket.gethostname()
+        sql = 'SELECT * FROM printer WHERE printer_PC=%s'
+        result = self.myCursor.execute(sql, [hostname])
+        if result:
+            sql1 = "UPDATE printer Set tag_printer=%s, report_printer=%s, invoice_printer=%s WHERE printer_PC=%s"
+            self.myCursor.execute(sql1, [tag_printer, report_printer, invoice_printer, hostname])
+            self.connection.commit()
+        else:
+            sql2 = "INSERT INTO printer(tag_printer, report_printer, invoice_printer, printer_PC) VALUES (%s, %s, %s, %s)"
+            self.myCursor.execute(sql2, [tag_printer, report_printer, invoice_printer, hostname])
+            self.connection.commit()
+
+        self.close()
+
+    def tag_click(self):
+        # 实例化打印图像对象
+        printer = QPrinter()
+        # 打印窗口弹出
+        printDialog = QPrintDialog(printer, self)
+        if printDialog.exec_():
+            self.tagEdit.setText(printer.printerName())
+            self.print1.setPrinterName(printer.printerName())
+            printDialog.close()
+
+    def invoice_click(self):
+        # 实例化打印图像对象
+        printer = QPrinter()
+        # 打印窗口弹出
+        printDialog = QPrintDialog(printer, self)
+        if printDialog.exec_():
+            self.invoiceEdit.setText(printer.printerName())
+            self.print2.setPrinterName(printer.printerName())
+            printDialog.close()
+
+    def report_click(self):
+        # 实例化打印图像对象
+        printer = QPrinter()
+        # 打印窗口弹出
+        printDialog = QPrintDialog(printer, self)
+        if printDialog.exec_():
+            self.reportEdit.setText(printer.printerName())
+            self.print3.setPrinterName(printer.printerName())
+            printDialog.close()
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
+    toHtmlFinished = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.videoWidget = VideoBox()
         self.setupUi(self)
+        self.setting = SettingWindow()
+
+        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.myCursor = self.connection.cursor()
 
         self.timer_camera = QtCore.QTimer()
         self.cap = cv2.VideoCapture()
@@ -61,21 +405,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.x = 0
         self.fileName = ""
         self.switch = True
-        self.player = QtMultimedia.QMediaPlayer()
 
+        # # Windows
         self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
         self.browserLayout.setObjectName("BrowserLayout")
         self.browser = QWebEngineView()
-        url = 'https://www.baidu.com/'  # http://192.168.0.20:4200
+        self.url = 'http://rtxtst.domain.cn:4200'  # http://192.168.0.20:4200
         # 指定打开界面的 URL
-        self.browser.setUrl(QUrl(url))
+        self.browser.setUrl(QUrl(self.url))
         self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
+        self.engine = pyttsx3.init()
+        self.engine.setProperty("voice",
+                                "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ZH-CN_HUIHUI_11.0")
 
         # # 树莓派
         # self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
         # self.browserLayout.setObjectName("BrowserLayout")
         # self.browser = QWebView()
-        # url = 'http://192.168.0.20:4200'
+        # url = 'http://rtxtst.domain.cn:4200'
         # # 指定打开界面的 URL
         # self.browser.setUrl(QUrl(url))
         # self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
@@ -89,18 +436,112 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stop.clicked.connect(self.setStop)
         self.open.clicked.connect(self.setOpen)
         self.send.clicked.connect(self.setSend)
+        self.tsmi_homePage.triggered.connect(self.MainPage)
+        self.tsmiPrinter.triggered.connect(self.Printer)
+        self.tsmiPageset.triggered.connect(self.PageSet)
+        self.tsmiReceiptLabel.triggered.connect(self.Receipt)
+        self.tsmiB2Clist.triggered.connect(self.B2CList)
+        self.tsmiB2BRePrint.triggered.connect(self.B2BReprint)
+        self.actionforward.triggered.connect(self.browser.forward)
+        self.actionbackward.triggered.connect(self.browser.back)
+        self.logout.clicked.connect(self.logout_click)
+
+    def logout_click(self):
+        self.close()
+        window.show()
+
+    def check(self):
         print("Main window opened!")
+        # switch3_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH1 ON"
+        # os.system(switch3_on)
+        # self.redlight.setChecked(True)
+        # switch2_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH3 ON"
+        # os.system(switch2_on)
+        # self.yellowlight.setChecked(True)
+        # switch1_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH2 ON"
+        # os.system(switch1_on)
+        # self.greenlight.setChecked(True)
+        # timer.sleep(0.1)
+        # switch3_off = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH1 OFF"
+        # os.system(switch3_off)
+        # self.yellowlight.setChecked(False)
+        # switch2_off = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH3 OFF"
+        # os.system(switch2_off)
+        # self.redlight.setChecked(False)
+        id = window.ID
+        sql = "SELECT * FROM users where user_id=%s"
+        self.myCursor.execute(sql, [id])
+        infoList = self.myCursor.fetchone()
+        self.name.setText(infoList[1])
+        self.age.setText(str(infoList[3]))
+        self.job.setText(infoList[4])
+        self.loginTime.setText(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())))
+
+        stuffPhoto = open("stuff.jpg", "wb")
+        stuffPhoto.write(infoList[5])
+        stuffPhoto.close()
+        jpg = QtGui.QPixmap("stuff.jpg").scaled(self.stuffPhoto.width(), self.stuffPhoto.height())
+        self.stuffPhoto.setPixmap(jpg)
+
+    def Receipt(self):
+        file_url = "file:///C:/Users/ivant/PycharmProjects/MyProject/label.html"
+        self.browser.setUrl(QUrl(file_url))
+
+    def B2CList(self):
+        file_url = "file:///C:/Users/ivant/PycharmProjects/MyProject/report.html"
+        self.browser.setUrl(QUrl(file_url))
+
+    def B2BReprint(self):
+        file_url = "file:///C:/Users/ivant/PycharmProjects/MyProject/b2breport.html"
+        self.browser.setUrl(QUrl(file_url))
+
+    def PageSet(self):
+        printer = QPrinter()
+        printDialog = QPrintDialog(printer, self)
+        if printDialog.exec_() == QDialog.Accepted:
+            page = self.browser.page()
+            page.print(printer, self.callback)
+        # dialog = QPrintPreviewDialog()
+        # dialog.paintRequested.connect(self.handlePaintRequest)
+        # dialog.exec_()
+
+    def callback(is_ok):
+        if is_ok:
+            print('printing finished')
+        else:
+            print('printing error')
+
+    # def handlePaintRequest(self, printer):
+    #     page = self.browser.page()
+    #     document = QTextDocument()
+    #     cursor = QCursor(page)
+    #     cursor.
+    #     document.print(printer)
+
+    #     page.print(printer, self.callback)
+
+    # page.toHtml(self.store_html)
+    #
+    # loop = QEventLoop()
+    # self.toHtmlFinished.connect(loop.quit)
+    # loop.exec_()
+    # print(self.html)
+
+    def Printer(self):
+        self.setting.show()
+
+    def MainPage(self):
+        print("clicked!")
+        self.browser.load(QUrl(self.url))
 
     def setSend(self):
         content = self.input.text()
         if content.strip():
             self.output.append(content)
             self.input.setText("")
-            engine = pyttsx3.init()
-            engine.setProperty("voice",
-                               "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ZH-CN_HUIHUI_11.0")
-            engine.say(content)
-            engine.runAndWait()
+
+            self.engine.say(content)
+            self.engine.runAndWait()
 
         else:
             print("input is empty")
@@ -201,10 +642,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def setYellow(self):
         if self.yellowlight.isChecked():
-            switch3_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH2 ON"
+            switch3_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH1 ON"
             os.system(switch3_on)
         else:
-            switch3_off = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH2 OFF"
+            switch3_off = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH1 OFF"
             os.system(switch3_off)
 
     def setRed(self):
@@ -217,10 +658,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def setGreen(self):
         if self.greenlight.isChecked():
-            switch1_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH1 ON"
+            switch1_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH2 ON"
             os.system(switch1_on)
         else:
-            switch1_off = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH1 OFF"
+            switch1_off = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH2 OFF"
             os.system(switch1_off)
 
 
@@ -238,4 +679,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = LoginWindow()
     window.show()
+    mainWindow = MainWindow()
     sys.exit(app.exec_())
