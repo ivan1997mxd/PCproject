@@ -1,0 +1,1242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1256</width>
+    <height>832</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#work{
+background:#fff;
+border:1px solid #000;
+}
+#material{
+background:#fff;
+border:1px solid #000;
+font:transparent
+}
+#photo{
+background:#fff;
+border:1px solid #000;
+}
+#info{
+background:#fff;
+border:1px solid #000;
+}
+#video{
+background:#000;
+border:1px solid #000;
+}
+#videoWindow{
+background:#fff;
+border:1px solid #000;
+}
+#browserWindow{
+background:#fff;
+border:1px solid #000;
+}
+#printer{
+background:#fff;
+border:1px solid #000;
+}
+#voice{
+background:#fff;
+border:1px solid #000;
+}
+#lights{
+background:#fff;
+border:1px solid #000;
+}
+#status{
+background:#fff;
+border:1px solid #000;
+}
+#redlight{
+background:#cc0000;
+}
+#yellowlight{
+background:#ffff00;
+}
+#greenlight{
+background:#00AA00;
+}
+#stuffPhoto{
+background:url(:/images/ivan1.jpg) no-repeat center center;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="6">
+     <widget class="QWidget" name="info" native="true">
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="1" column="0">
+        <widget class="QLabel" name="jobLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>职位</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="age">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>22</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="job">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>程序员</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="name">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>童晨</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="nameLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>姓名</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="ageLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>年龄</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="loginTime">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>2019-07-07 15：28</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="timeLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>登录时间</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="tableLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>当前工作台</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="table">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>123</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="5" column="1" rowspan="2" colspan="3">
+     <widget class="QGroupBox" name="work">
+      <property name="title">
+       <string>工作进程</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>5</width>
+           <height>5</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QTableWidget" name="workTabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <row>
+          <property name="text">
+           <string>1</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>2</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>3</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>4</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>5</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>6</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>7</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>8</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>9</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>10</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>11</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>12</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>13</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>14</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>15</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>16</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>17</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>18</string>
+          </property>
+         </row>
+         <row>
+          <property name="text">
+           <string>20</string>
+          </property>
+         </row>
+         <column>
+          <property name="text">
+           <string>rtxtaskgrp</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>addwho</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>已拣货件数</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>已复核件数</string>
+          </property>
+         </column>
+         <item row="0" column="0">
+          <property name="text">
+           <string>T000001507</string>
+          </property>
+         </item>
+         <item row="0" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="0" column="2">
+          <property name="text">
+           <string>12</string>
+          </property>
+         </item>
+         <item row="0" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="1" column="0">
+          <property name="text">
+           <string>T000001501</string>
+          </property>
+         </item>
+         <item row="1" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="1" column="2">
+          <property name="text">
+           <string>67</string>
+          </property>
+         </item>
+         <item row="1" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="2" column="0">
+          <property name="text">
+           <string>T000001520</string>
+          </property>
+         </item>
+         <item row="2" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="2" column="2">
+          <property name="text">
+           <string>34</string>
+          </property>
+         </item>
+         <item row="2" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="3" column="0">
+          <property name="text">
+           <string>T000001519</string>
+          </property>
+         </item>
+         <item row="3" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="3" column="2">
+          <property name="text">
+           <string>34</string>
+          </property>
+         </item>
+         <item row="3" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="4" column="0">
+          <property name="text">
+           <string>T000001517</string>
+          </property>
+         </item>
+         <item row="4" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="4" column="2">
+          <property name="text">
+           <string>27</string>
+          </property>
+         </item>
+         <item row="4" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="5" column="0">
+          <property name="text">
+           <string>T000001502</string>
+          </property>
+         </item>
+         <item row="5" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="5" column="2">
+          <property name="text">
+           <string>49</string>
+          </property>
+         </item>
+         <item row="5" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="6" column="0">
+          <property name="text">
+           <string>T000001503</string>
+          </property>
+         </item>
+         <item row="6" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="6" column="2">
+          <property name="text">
+           <string>15</string>
+          </property>
+         </item>
+         <item row="6" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="7" column="0">
+          <property name="text">
+           <string>T000001504</string>
+          </property>
+         </item>
+         <item row="7" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="7" column="2">
+          <property name="text">
+           <string>33</string>
+          </property>
+         </item>
+         <item row="7" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="8" column="0">
+          <property name="text">
+           <string>T000001501</string>
+          </property>
+         </item>
+         <item row="8" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="8" column="2">
+          <property name="text">
+           <string>12</string>
+          </property>
+         </item>
+         <item row="8" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="9" column="0">
+          <property name="text">
+           <string>T000001510</string>
+          </property>
+         </item>
+         <item row="9" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="9" column="2">
+          <property name="text">
+           <string>8</string>
+          </property>
+         </item>
+         <item row="9" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="10" column="0">
+          <property name="text">
+           <string>T000001509</string>
+          </property>
+         </item>
+         <item row="10" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="10" column="2">
+          <property name="text">
+           <string>34</string>
+          </property>
+         </item>
+         <item row="10" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="11" column="0">
+          <property name="text">
+           <string>T000001506</string>
+          </property>
+         </item>
+         <item row="11" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="11" column="2">
+          <property name="text">
+           <string>65</string>
+          </property>
+         </item>
+         <item row="11" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="12" column="0">
+          <property name="text">
+           <string>T000001505</string>
+          </property>
+         </item>
+         <item row="12" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="12" column="2">
+          <property name="text">
+           <string>12</string>
+          </property>
+         </item>
+         <item row="12" column="3">
+          <property name="text">
+           <string>6</string>
+          </property>
+         </item>
+         <item row="13" column="0">
+          <property name="text">
+           <string>T000001514</string>
+          </property>
+         </item>
+         <item row="13" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="13" column="2">
+          <property name="text">
+           <string>54</string>
+          </property>
+         </item>
+         <item row="13" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="14" column="0">
+          <property name="text">
+           <string>T000001512</string>
+          </property>
+         </item>
+         <item row="14" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="14" column="2">
+          <property name="text">
+           <string>23</string>
+          </property>
+         </item>
+         <item row="14" column="3">
+          <property name="text">
+           <string>3</string>
+          </property>
+         </item>
+         <item row="15" column="0">
+          <property name="text">
+           <string>T000001508</string>
+          </property>
+         </item>
+         <item row="15" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="15" column="2">
+          <property name="text">
+           <string>16</string>
+          </property>
+         </item>
+         <item row="15" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="16" column="0">
+          <property name="text">
+           <string>T000001506</string>
+          </property>
+         </item>
+         <item row="16" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="16" column="2">
+          <property name="text">
+           <string>25</string>
+          </property>
+         </item>
+         <item row="16" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="17" column="0">
+          <property name="text">
+           <string>T000001519</string>
+          </property>
+         </item>
+         <item row="17" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="17" column="2">
+          <property name="text">
+           <string>4</string>
+          </property>
+         </item>
+         <item row="17" column="3">
+          <property name="text">
+           <string>0</string>
+          </property>
+         </item>
+         <item row="18" column="0">
+          <property name="text">
+           <string>T000001520</string>
+          </property>
+         </item>
+         <item row="18" column="1">
+          <property name="text">
+           <string>114</string>
+          </property>
+         </item>
+         <item row="18" column="2">
+          <property name="text">
+           <string>6</string>
+          </property>
+         </item>
+         <item row="18" column="3">
+          <property name="text">
+           <string>1</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="1" column="5" rowspan="4" colspan="2">
+     <widget class="QGroupBox" name="videoWindow">
+      <property name="title">
+       <string>相机模块</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="1" column="0" colspan="4">
+        <widget class="QLabel" name="video">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="live">
+         <property name="text">
+          <string>开启相机</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="start">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>开始录制</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="stop">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>结束录制</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QPushButton" name="open">
+         <property name="text">
+          <string>打开文件</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="5">
+     <widget class="QWidget" name="photo" native="true">
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="0">
+        <widget class="QLabel" name="stuffPhoto">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="6" column="4">
+     <widget class="QGroupBox" name="voice">
+      <property name="title">
+       <string>语音合成</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="0" column="0">
+        <widget class="QLineEdit" name="input">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="send">
+         <property name="text">
+          <string>发送</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="5" column="5" rowspan="2">
+     <widget class="QGroupBox" name="lights">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>指示灯</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QPushButton" name="redlight">
+         <property name="text">
+          <string>红灯</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="yellowlight">
+         <property name="text">
+          <string>黄灯</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="greenlight">
+         <property name="text">
+          <string>绿灯</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="5" column="4">
+     <widget class="QGroupBox" name="material">
+      <property name="title">
+       <string>耗材</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="4" column="0">
+        <widget class="QLabel" name="m3">
+         <property name="text">
+          <string>大纸箱</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="m4">
+         <property name="text">
+          <string>中纸箱</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="m3Count">
+         <property name="text">
+          <string>345</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="m1">
+         <property name="text">
+          <string>封箱胶</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="m1Count">
+         <property name="text">
+          <string>45</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="m5Count">
+         <property name="text">
+          <string>679</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="m2">
+         <property name="text">
+          <string>蛇皮袋</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="m4Count">
+         <property name="text">
+          <string>123</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="m5">
+         <property name="text">
+          <string>小纸箱</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="m2Count">
+         <property name="text">
+          <string>120</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="freshList">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>刷新</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="5" column="6" rowspan="2">
+     <widget class="QGroupBox" name="status">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="title">
+       <string>状态栏</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="1">
+        <widget class="QLabel" name="printerStatus">
+         <property name="text">
+          <string>在线</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="internetLabel">
+         <property name="text">
+          <string>网络状态：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="serverStatus">
+         <property name="text">
+          <string>在线</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="printerLabel">
+         <property name="text">
+          <string>默认打印机：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QPushButton" name="process">
+         <property name="text">
+          <string>工作进度</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="lightStatus">
+         <property name="text">
+          <string>在线</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="internetStatus">
+         <property name="text">
+          <string>在线</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="Label">
+         <property name="text">
+          <string>服务器状态：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lightsLabel">
+         <property name="text">
+          <string>指示灯状态：</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="lightTest">
+         <property name="text">
+          <string>检测</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="printerTest">
+         <property name="text">
+          <string>更改</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QPushButton" name="serverTest">
+         <property name="text">
+          <string>检测</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="internetTest">
+         <property name="text">
+          <string>检测</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QPushButton" name="rank">
+         <property name="text">
+          <string>排行榜</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QPushButton" name="logout">
+         <property name="text">
+          <string>退出登录</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1" rowspan="5" colspan="4">
+     <widget class="QWidget" name="browserWindow" native="true"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1256</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="tsmiHomePage">
+    <property name="title">
+     <string>主页</string>
+    </property>
+    <addaction name="tsmi_homePage"/>
+    <addaction name="actionforward"/>
+    <addaction name="actionbackward"/>
+   </widget>
+   <widget class="QMenu" name="tsmiPrinterSet">
+    <property name="title">
+     <string>打印设置</string>
+    </property>
+    <addaction name="tsmiPrinter"/>
+    <addaction name="tsmiPageset"/>
+   </widget>
+   <widget class="QMenu" name="tsmiRePrint">
+    <property name="title">
+     <string>补打功能</string>
+    </property>
+    <addaction name="tsmiReceiptLabel"/>
+    <addaction name="tsmiB2Clist"/>
+    <addaction name="tsmiB2BRePrint"/>
+   </widget>
+   <widget class="QMenu" name="tsmi_menu">
+    <property name="title">
+     <string>称重</string>
+    </property>
+    <addaction name="tsmi_weightconfig"/>
+   </widget>
+   <addaction name="tsmiHomePage"/>
+   <addaction name="tsmiPrinterSet"/>
+   <addaction name="tsmiRePrint"/>
+   <addaction name="tsmi_menu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionrecord">
+   <property name="text">
+    <string>record</string>
+   </property>
+  </action>
+  <action name="actionopen">
+   <property name="text">
+    <string>open</string>
+   </property>
+  </action>
+  <action name="actionlive">
+   <property name="text">
+    <string>live</string>
+   </property>
+  </action>
+  <action name="tsmiPrinter">
+   <property name="text">
+    <string>打印设置</string>
+   </property>
+  </action>
+  <action name="tsmiPageset">
+   <property name="text">
+    <string>打印当前页面</string>
+   </property>
+  </action>
+  <action name="tsmiReceiptLabel">
+   <property name="text">
+    <string>收货标签</string>
+   </property>
+  </action>
+  <action name="tsmiB2Clist">
+   <property name="text">
+    <string>B2C清单</string>
+   </property>
+  </action>
+  <action name="tsmiB2BRePrint">
+   <property name="text">
+    <string>B2B补打</string>
+   </property>
+  </action>
+  <action name="tsmi_weightconfig">
+   <property name="text">
+    <string>配置</string>
+   </property>
+  </action>
+  <action name="tsmi_homePage">
+   <property name="text">
+    <string>首页</string>
+   </property>
+  </action>
+  <action name="actionforward">
+   <property name="text">
+    <string>前进</string>
+   </property>
+  </action>
+  <action name="actionbackward">
+   <property name="text">
+    <string>返回</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resource_main.qrc"/>
+ </resources>
+ <connections/>
+</ui>

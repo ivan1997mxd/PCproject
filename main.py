@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import numpy as np
 from PIL import Image
@@ -11,13 +12,19 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtPrintSupport import *
 from PyQt5.QtWebEngineWidgets import *
+# from PyQt5.QtWebKitWidgets import *
 from PyQt5.QtWidgets import *
 from live import VideoBox
 from view.login import *
 from view.setting import *
 from view.signup import *
-from view.mainwindow2 import Ui_MainWindow
+from view.mainwindowUI import Ui_MainWindow
+import cx_Oracle
 import pyttsx3
+import requests
+from bs4 import BeautifulSoup
+
+os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
 
 
 class SignWindow(QMainWindow, Ui_signup):
@@ -194,8 +201,8 @@ class LoginWindow(QMainWindow, Ui_login):
         if name != "" and pwd != "":
             sql = "SELECT * FROM users where user_name= %s and user_pwd= %s"
             result = self.myCursor.execute(sql, [name, pwd])
-            self.ID = self.myCursor.fetchone()[0]
             if result:
+                self.ID = self.myCursor.fetchone()[0]
                 QMessageBox.information(self, "恭喜," + name, "登陆成功", QMessageBox.Ok)
                 self.loginDone(name)
             else:
@@ -209,10 +216,10 @@ class LoginWindow(QMainWindow, Ui_login):
         hostname = socket.gethostname()
         engine = pyttsx3.init()
         engine.setProperty("voice",
-                           "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ZH-CN_HUIHUI_11.0")
-        content = id + ", 欢迎登录" + hostname + "号工作台，设备自检中，信号灯工作正常,1号打印机已联机，2号打印机已联机，称重设备已联机，祝你工作愉快！"
-        self.myCursor.close()
-        self.connection.close()
+                           "zh")
+        content = id + ", 欢迎登录" + hostname + "号工作台，设备自检中，信号灯工作正常,1号打印机未联机，2号打印机未联机，称重设备未联机，祝你工作愉快！"
+        # self.myCursor.close()
+        # self.connection.close()
         self.close()
         mainWindow.show()
         mainWindow.check()
@@ -285,6 +292,7 @@ class LoginWindow(QMainWindow, Ui_login):
                     reply = QMessageBox.information(self, "人脸识别成功,", "用户：" + id + ",请问是否要以此账号登录",
                                                     QMessageBox.Yes | QMessageBox.No)
                     if reply == QMessageBox.Yes:
+                        print(id, self.ID, confidence)
                         result = False
 
                     else:
@@ -391,12 +399,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("仓库管理系统")
         self.videoWidget = VideoBox()
         self.setupUi(self)
         self.setting = SettingWindow()
 
         self.connection = pymysql.connect("localhost", "root", "root", "login")
         self.myCursor = self.connection.cursor()
+        # Oracle DB
+        # self.conn = cx_Oracle.connect("wmwhse1/WMwhSql1@192.168.0.20:1521/SCPRD")
+        # self.curs = self.conn.cursor()
 
         self.timer_camera = QtCore.QTimer()
         self.cap = cv2.VideoCapture()
@@ -406,11 +418,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.fileName = ""
         self.switch = True
 
-        # # Windows
+        # Windows
         self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
         self.browserLayout.setObjectName("BrowserLayout")
         self.browser = QWebEngineView()
-        self.url = 'http://rtxtst.domain.cn:4200'  # http://192.168.0.20:4200
+        self.url = 'http://rtxwms.domain.com:4200'  # http://192.168.0.20:4200
         # 指定打开界面的 URL
         self.browser.setUrl(QUrl(self.url))
         self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
@@ -418,7 +430,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.engine.setProperty("voice",
                                 "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\TTS_MS_ZH-CN_HUIHUI_11.0")
 
-        # # 树莓派
+        # 树莓派
         # self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
         # self.browserLayout.setObjectName("BrowserLayout")
         # self.browser = QWebView()
@@ -426,7 +438,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # # 指定打开界面的 URL
         # self.browser.setUrl(QUrl(url))
         # self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
-
+        self.printer = QPrinter()
+        self.html = ""
         self.yellowlight.clicked.connect(self.setYellow)
         self.greenlight.clicked.connect(self.setGreen)
         self.redlight.clicked.connect(self.setRed)
@@ -445,6 +458,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionforward.triggered.connect(self.browser.forward)
         self.actionbackward.triggered.connect(self.browser.back)
         self.logout.clicked.connect(self.logout_click)
+        self.printerTest.clicked.connect(self.printerTest_clicked)
+        self.internetTest.clicked.connect(self.isConnect)
+
+    def isConnect(self):
+        try:
+            requests.get("https://www.baidu.com/", timeout=2)
+        except:
+            self.internetStatus.setText("离线")
+        self.internetStatus.setText("在线")
+
+    def printerTest_clicked(self):
+        printDialog = QPrintDialog(self.printer, self)
+        if printDialog.exec_():
+            name = self.printer.printerName()
+            self.statusbar.showMessage(name)
+            self.printerStatus.setText(name[0:20])
+            printDialog.close()
 
     def logout_click(self):
         self.close()
@@ -452,22 +482,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def check(self):
         print("Main window opened!")
-        # switch3_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH1 ON"
-        # os.system(switch3_on)
-        # self.redlight.setChecked(True)
-        # switch2_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH3 ON"
-        # os.system(switch2_on)
-        # self.yellowlight.setChecked(True)
-        # switch1_on = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH2 ON"
-        # os.system(switch1_on)
-        # self.greenlight.setChecked(True)
-        # timer.sleep(0.1)
-        # switch3_off = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH1 OFF"
-        # os.system(switch3_off)
-        # self.yellowlight.setChecked(False)
-        # switch2_off = "sudo /home/pi/RPi_Relay_Board/shell/Relay.sh CH3 OFF"
-        # os.system(switch2_off)
-        # self.redlight.setChecked(False)
         id = window.ID
         sql = "SELECT * FROM users where user_id=%s"
         self.myCursor.execute(sql, [id])
@@ -482,32 +496,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stuffPhoto.close()
         jpg = QtGui.QPixmap("stuff.jpg").scaled(self.stuffPhoto.width(), self.stuffPhoto.height())
         self.stuffPhoto.setPixmap(jpg)
+        self.printerStatus.setText(self.printer.printerName())
+        # self.setTable()
 
     def Receipt(self):
-        file_url = "file:///C:/Users/ivant/PycharmProjects/MyProject/label.html"
+        file_url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=0000026675&LPNid=X000000647&__format=html&&__pageoverflow=0&__overwrite=false"
         self.browser.setUrl(QUrl(file_url))
 
     def B2CList(self):
-        file_url = "file:///C:/Users/ivant/PycharmProjects/MyProject/report.html"
+        file_url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=0000026675&LPNid=X000000647&__format=html&&__pageoverflow=0&__overwrite=false"
         self.browser.setUrl(QUrl(file_url))
 
     def B2BReprint(self):
-        file_url = "file:///C:/Users/ivant/PycharmProjects/MyProject/b2breport.html"
+        file_url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=0000026675&LPNid=X000000647&__format=html&&__pageoverflow=0&__overwrite=false"
         self.browser.setUrl(QUrl(file_url))
 
     def PageSet(self):
-        printer = QPrinter()
-        printDialog = QPrintDialog(printer, self)
-        if printDialog.exec_() == QDialog.Accepted:
-            page = self.browser.page()
-            page.print(printer, self.callback)
-        # dialog = QPrintPreviewDialog()
-        # dialog.paintRequested.connect(self.handlePaintRequest)
-        # dialog.exec_()
+        page = self.browser.page()
+        # page.toHtml(self.callback)
+        page.print(self.printer, self.callBack)
+        # self.printer.setOutputFormat(QPrinter.PdfFormat)
+        # self.printer.setOutputFileName('a.pdf')
+        # self.browser.print(self.printer)
+        # os.system("xdg-open a.pdf")
 
-    def callback(is_ok):
-        if is_ok:
-            print('printing finished')
+    def callBack(self, x):
+        if x:
+            print('printing ok' + x)
         else:
             print('printing error')
 
@@ -537,12 +552,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def setSend(self):
         content = self.input.text()
         if content.strip():
-            self.output.append(content)
             self.input.setText("")
-
             self.engine.say(content)
             self.engine.runAndWait()
-
         else:
             print("input is empty")
 
@@ -573,6 +585,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # keep_process = True
         self.stop.setEnabled(True)
         self.start.setText(u"录像中")
+        self.statusbar.showMessage("正在录像中")
         codec = cv2.VideoWriter_fourcc(*'MJPG')
         fps = 25.0  # 指定写入帧率为25
         frameSize = (640, 480)  # 指定窗口大小
@@ -587,7 +600,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         while self.cap.isOpened():
             if self.switch:
                 ret, frame = self.cap.read()
-
                 start_t = cv2.getTickCount()
                 output.write(frame)
                 stop_t = ((cv2.getTickCount() - start_t) / cv2.getTickFrequency()) * 1000
@@ -598,6 +610,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print("Quit Process ")
                 break
         # print("The display and video write tasks take {} ms".format(stop_t))
+
+    # def setTable(self):
+    #     sql = "select distinct aa.rtxtaskgrp,aa.addwho,(select sum(b.qty) from  taskdetail b where  b.rtxtaskgrp=aa.rtxtaskgrp) 已拣货件数,(select sum(c.checkedqty) from  rtx_checkdetail c where  c.taskgroup=aa.rtxtaskgrp and status='9') 已复核件数  from taskdetail aa where aa.rtxtaskgrp is not null and addwho in('114','115') and aa.status='9'"
+    #     self.curs.execute(sql)
+    #     k = 0
+    #     # count = len(list(self.curs))
+    #     for i in self.curs:
+    #         print("----------", i)
+    #         w = 0
+    #         for j in i:
+    #             # 这里是将int类型转成string类型，方便后面文本设置
+    #             if type(j) == int:
+    #                 newItem = QTableWidgetItem(str(j))
+    #             else:
+    #                 newItem = QTableWidgetItem(j)
+    #             # 根据循环标签一次对table中的格子进行设置
+    #             self.workTabel.setItem(k, w, newItem)
+    #             w += 1
+    #         k += 1
 
     def setLive(self):
         if not self.timer_camera.isActive():

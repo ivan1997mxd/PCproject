@@ -1,3 +1,15 @@
+# import cx_Oracle
+#
+# conn = cx_Oracle.connect('wmwhse1/WMwhSql1@192.168.0.20:1521/SCPRD')
+# curs = conn.cursor()
+# sql = 'select * from taskdetail'
+# curs.execute(sql)
+#
+# for result in curs:
+#     print(result)
+#
+# curs.close()
+# conn.close()
 import time
 import sys
 
