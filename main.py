@@ -212,11 +212,23 @@ class LoginWindow(QMainWindow, Ui_login):
         else:
             QMessageBox.information(self, "错误", "用户名和密码不能为空", QMessageBox.Ok)
 
+    def getdevlist(self):
+        devlist = []
+        connectfile = os.popen('lsusb')
+        list = connectfile.readlines()
+        print(list)
+        for i in range(len(list)):
+            if list[i].find('\tdevice') != -1:
+                temp = list[i].split('\t')
+                devlist.append(temp[0])
+        return devlist
+
     def loginDone(self, id):
         hostname = socket.gethostname()
         engine = pyttsx3.init()
         engine.setProperty("voice",
                            "zh")
+
         content = id + ", 欢迎登录" + hostname + "号工作台，设备自检中，信号灯工作正常,1号打印机未联机，2号打印机未联机，称重设备未联机，祝你工作愉快！"
         # self.myCursor.close()
         # self.connection.close()
@@ -407,8 +419,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connection = pymysql.connect("localhost", "root", "root", "login")
         self.myCursor = self.connection.cursor()
         # Oracle DB
-        # self.conn = cx_Oracle.connect("wmwhse1/WMwhSql1@192.168.0.20:1521/SCPRD")
-        # self.curs = self.conn.cursor()
 
         self.timer_camera = QtCore.QTimer()
         self.cap = cv2.VideoCapture()
@@ -497,7 +507,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         jpg = QtGui.QPixmap("stuff.jpg").scaled(self.stuffPhoto.width(), self.stuffPhoto.height())
         self.stuffPhoto.setPixmap(jpg)
         self.printerStatus.setText(self.printer.printerName())
-        # self.setTable()
 
     def Receipt(self):
         file_url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=0000026675&LPNid=X000000647&__format=html&&__pageoverflow=0&__overwrite=false"
@@ -513,16 +522,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def PageSet(self):
         page = self.browser.page()
-        # page.toHtml(self.callback)
+        # # page.toHtml(self.callback)
         page.print(self.printer, self.callBack)
         # self.printer.setOutputFormat(QPrinter.PdfFormat)
         # self.printer.setOutputFileName('a.pdf')
-        # self.browser.print(self.printer)
+        # self.browser.page().print(self.printer, self.callBack)
         # os.system("xdg-open a.pdf")
 
     def callBack(self, x):
         if x:
-            print('printing ok' + x)
+            print('printing ok' + str(x))
         else:
             print('printing error')
 
