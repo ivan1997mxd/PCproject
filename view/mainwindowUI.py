@@ -2,151 +2,78 @@
 
 # Form implementation generated from reading ui file 'mainwindowUI.ui'
 #
-# Created by: PyQt5 UI code generator 5.12.1
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setWindowTitle("工作台")
-        MainWindow.resize(1256, 832)
+        MainWindow.resize(1094, 893)
         MainWindow.setStyleSheet("#work{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#material{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "font:transparent\n"
-                                 "}\n"
-                                 "#photo{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#info{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#video{\n"
-                                 "background:#000;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#videoWindow{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#browserWindow{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#printer{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#voice{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#lights{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#status{\n"
-                                 "background:#fff;\n"
-                                 "border:1px solid #000;\n"
-                                 "}\n"
-                                 "#redlight{\n"
-                                 "background:#cc0000;\n"
-                                 "}\n"
-                                 "#yellowlight{\n"
-                                 "background:#ffff00;\n"
-                                 "}\n"
-                                 "#greenlight{\n"
-                                 "background:#00AA00;\n"
-                                 "}\n"
-                                 #
-                                 "")
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#material{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"font:transparent\n"
+"}\n"
+"#photo{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#info{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#video{\n"
+"background:#000;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#videoWindow{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#browserWindow{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#printer{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#voice{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#lights{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#status{\n"
+"background:#fff;\n"
+"border:1px solid #000;\n"
+"}\n"
+"#redlight{\n"
+"background:#cc0000;\n"
+"}\n"
+"#yellowlight{\n"
+"background:#ffff00;\n"
+"}\n"
+"#greenlight{\n"
+"background:#00AA00;\n"
+"}\n"
+"#stuffPhoto{\n"
+"background:url(:/images/ivan1.jpg) no-repeat center center;\n"
+"}\n"
+"")
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.status = QtWidgets.QGroupBox(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.status.sizePolicy().hasHeightForWidth())
-        self.status.setSizePolicy(sizePolicy)
-        self.status.setStyleSheet("")
-        self.status.setObjectName("status")
-        self.gridLayout_2 = QtWidgets.QGridLayout(self.status)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.printerStatus = QtWidgets.QLabel(self.status)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.printerStatus.sizePolicy().hasHeightForWidth())
-        self.printerStatus.setSizePolicy(sizePolicy)
-        self.printerStatus.setObjectName("printerStatus")
-        self.gridLayout_2.addWidget(self.printerStatus, 0, 1, 1, 1)
-        self.internetLabel = QtWidgets.QLabel(self.status)
-        self.internetLabel.setObjectName("internetLabel")
-        self.gridLayout_2.addWidget(self.internetLabel, 2, 0, 1, 1)
-        self.serverStatus = QtWidgets.QLabel(self.status)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.serverStatus.sizePolicy().hasHeightForWidth())
-        self.serverStatus.setSizePolicy(sizePolicy)
-        self.serverStatus.setObjectName("serverStatus")
-        self.gridLayout_2.addWidget(self.serverStatus, 3, 1, 1, 1)
-        self.printerLabel = QtWidgets.QLabel(self.status)
-        self.printerLabel.setObjectName("printerLabel")
-        self.gridLayout_2.addWidget(self.printerLabel, 0, 0, 1, 1)
-        self.lightStatus = QtWidgets.QLabel(self.status)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.lightStatus.sizePolicy().hasHeightForWidth())
-        self.lightStatus.setSizePolicy(sizePolicy)
-        self.lightStatus.setObjectName("lightStatus")
-        self.gridLayout_2.addWidget(self.lightStatus, 1, 1, 1, 1)
-        self.internetStatus = QtWidgets.QLabel(self.status)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.internetStatus.sizePolicy().hasHeightForWidth())
-        self.internetStatus.setSizePolicy(sizePolicy)
-        self.internetStatus.setObjectName("internetStatus")
-        self.gridLayout_2.addWidget(self.internetStatus, 2, 1, 1, 1)
-        self.Label = QtWidgets.QLabel(self.status)
-        self.Label.setObjectName("Label")
-        self.gridLayout_2.addWidget(self.Label, 3, 0, 1, 1)
-        self.lightsLabel = QtWidgets.QLabel(self.status)
-        self.lightsLabel.setObjectName("lightsLabel")
-        self.gridLayout_2.addWidget(self.lightsLabel, 1, 0, 1, 1)
-        self.lightTest = QtWidgets.QPushButton(self.status)
-        self.lightTest.setObjectName("lightTest")
-        self.gridLayout_2.addWidget(self.lightTest, 1, 2, 1, 1)
-        self.printerTest = QtWidgets.QPushButton(self.status)
-        self.printerTest.setObjectName("printerTest")
-        self.gridLayout_2.addWidget(self.printerTest, 0, 2, 1, 1)
-        self.serverTest = QtWidgets.QPushButton(self.status)
-        self.serverTest.setObjectName("serverTest")
-        self.gridLayout_2.addWidget(self.serverTest, 3, 2, 1, 1)
-        self.internetTest = QtWidgets.QPushButton(self.status)
-        self.internetTest.setObjectName("internetTest")
-        self.gridLayout_2.addWidget(self.internetTest, 2, 2, 1, 1)
-        self.logout = QtWidgets.QPushButton(self.status)
-        self.logout.setObjectName("logout")
-        self.gridLayout_2.addWidget(self.logout, 4, 2, 1, 1)
-        self.process = QtWidgets.QPushButton(self.status)
-        self.process.setObjectName("process")
-        self.gridLayout_2.addWidget(self.process, 4, 0, 1, 2)
-        self.gridLayout.addWidget(self.status, 5, 7, 2, 1)
         self.lights = QtWidgets.QGroupBox(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -245,20 +172,9 @@ class Ui_MainWindow(object):
         self.video.setObjectName("video")
         self.gridLayout_3.addWidget(self.video, 1, 0, 1, 4)
         self.gridLayout.addWidget(self.videoWindow, 1, 6, 4, 2)
-        self.photo = QtWidgets.QWidget(self.centralwidget)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.photo.sizePolicy().hasHeightForWidth())
-        self.photo.setSizePolicy(sizePolicy)
-        self.photo.setObjectName("photo")
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.photo)
-        self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.stuffPhoto = QtWidgets.QLabel(self.photo)
-        self.stuffPhoto.setText("")
-        self.stuffPhoto.setObjectName("stuffPhoto")
-        self.verticalLayout_2.addWidget(self.stuffPhoto)
-        self.gridLayout.addWidget(self.photo, 0, 7, 1, 1)
+        self.browserWindow = QtWidgets.QWidget(self.centralwidget)
+        self.browserWindow.setObjectName("browserWindow")
+        self.gridLayout.addWidget(self.browserWindow, 0, 1, 7, 4)
         self.info = QtWidgets.QWidget(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -348,13 +264,100 @@ class Ui_MainWindow(object):
         self.table.setSizePolicy(sizePolicy)
         self.table.setObjectName("table")
         self.gridLayout_5.addWidget(self.table, 4, 1, 1, 1)
-        self.gridLayout.addWidget(self.info, 0, 6, 1, 1)
-        self.browserWindow = QtWidgets.QWidget(self.centralwidget)
-        self.browserWindow.setObjectName("browserWindow")
-        self.gridLayout.addWidget(self.browserWindow, 0, 1, 7, 4)
+        self.gridLayout.addWidget(self.info, 0, 7, 1, 1)
+        self.photo = QtWidgets.QWidget(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.photo.sizePolicy().hasHeightForWidth())
+        self.photo.setSizePolicy(sizePolicy)
+        self.photo.setObjectName("photo")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.photo)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.stuffPhoto = QtWidgets.QLabel(self.photo)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.stuffPhoto.sizePolicy().hasHeightForWidth())
+        self.stuffPhoto.setSizePolicy(sizePolicy)
+        self.stuffPhoto.setText("")
+        self.stuffPhoto.setObjectName("stuffPhoto")
+        self.verticalLayout_2.addWidget(self.stuffPhoto)
+        self.gridLayout.addWidget(self.photo, 0, 6, 1, 1)
+        self.status = QtWidgets.QGroupBox(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.status.sizePolicy().hasHeightForWidth())
+        self.status.setSizePolicy(sizePolicy)
+        self.status.setStyleSheet("")
+        self.status.setObjectName("status")
+        self.gridLayout_2 = QtWidgets.QGridLayout(self.status)
+        self.gridLayout_2.setObjectName("gridLayout_2")
+        self.scaleLabel = QtWidgets.QLabel(self.status)
+        self.scaleLabel.setObjectName("scaleLabel")
+        self.gridLayout_2.addWidget(self.scaleLabel, 3, 0, 1, 1)
+        self.printerLabel = QtWidgets.QLabel(self.status)
+        self.printerLabel.setObjectName("printerLabel")
+        self.gridLayout_2.addWidget(self.printerLabel, 0, 0, 1, 1)
+        self.cameraStatus = QtWidgets.QLabel(self.status)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.cameraStatus.sizePolicy().hasHeightForWidth())
+        self.cameraStatus.setSizePolicy(sizePolicy)
+        self.cameraStatus.setObjectName("cameraStatus")
+        self.gridLayout_2.addWidget(self.cameraStatus, 2, 1, 1, 1)
+        self.cameraLabel = QtWidgets.QLabel(self.status)
+        self.cameraLabel.setObjectName("cameraLabel")
+        self.gridLayout_2.addWidget(self.cameraLabel, 2, 0, 1, 1)
+        self.gunStatus = QtWidgets.QLabel(self.status)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.gunStatus.sizePolicy().hasHeightForWidth())
+        self.gunStatus.setSizePolicy(sizePolicy)
+        self.gunStatus.setObjectName("gunStatus")
+        self.gridLayout_2.addWidget(self.gunStatus, 1, 1, 1, 1)
+        self.scaleStatus = QtWidgets.QLabel(self.status)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.scaleStatus.sizePolicy().hasHeightForWidth())
+        self.scaleStatus.setSizePolicy(sizePolicy)
+        self.scaleStatus.setObjectName("scaleStatus")
+        self.gridLayout_2.addWidget(self.scaleStatus, 3, 1, 1, 1)
+        self.defaultPrinter = QtWidgets.QPushButton(self.status)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.defaultPrinter.sizePolicy().hasHeightForWidth())
+        self.defaultPrinter.setSizePolicy(sizePolicy)
+        self.defaultPrinter.setObjectName("defaultPrinter")
+        self.gridLayout_2.addWidget(self.defaultPrinter, 4, 0, 1, 2)
+        self.logout = QtWidgets.QPushButton(self.status)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.logout.sizePolicy().hasHeightForWidth())
+        self.logout.setSizePolicy(sizePolicy)
+        self.logout.setObjectName("logout")
+        self.gridLayout_2.addWidget(self.logout, 5, 0, 1, 2)
+        self.printerStatus = QtWidgets.QLabel(self.status)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.printerStatus.sizePolicy().hasHeightForWidth())
+        self.printerStatus.setSizePolicy(sizePolicy)
+        self.printerStatus.setObjectName("printerStatus")
+        self.gridLayout_2.addWidget(self.printerStatus, 0, 1, 1, 1)
+        self.gunLabel = QtWidgets.QLabel(self.status)
+        self.gunLabel.setObjectName("gunLabel")
+        self.gridLayout_2.addWidget(self.gunLabel, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.status, 5, 7, 2, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1256, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1094, 21))
         self.menubar.setObjectName("menubar")
         self.tsmiHomePage = QtWidgets.QMenu(self.menubar)
         self.tsmiHomePage.setObjectName("tsmiHomePage")
@@ -412,21 +415,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.status.setTitle(_translate("MainWindow", "状态栏"))
-        self.printerStatus.setText(_translate("MainWindow", "在线"))
-        self.internetLabel.setText(_translate("MainWindow", "网络状态："))
-        self.serverStatus.setText(_translate("MainWindow", "在线"))
-        self.printerLabel.setText(_translate("MainWindow", "默认打印机："))
-        self.lightStatus.setText(_translate("MainWindow", "在线"))
-        self.internetStatus.setText(_translate("MainWindow", "在线"))
-        self.Label.setText(_translate("MainWindow", "服务器状态："))
-        self.lightsLabel.setText(_translate("MainWindow", "指示灯状态："))
-        self.lightTest.setText(_translate("MainWindow", "检测"))
-        self.printerTest.setText(_translate("MainWindow", "更改"))
-        self.serverTest.setText(_translate("MainWindow", "检测"))
-        self.internetTest.setText(_translate("MainWindow", "检测"))
-        self.logout.setText(_translate("MainWindow", "退出登录"))
-        self.process.setText(_translate("MainWindow", "工作进度"))
         self.lights.setTitle(_translate("MainWindow", "指示灯"))
         self.redlight.setText(_translate("MainWindow", "红灯"))
         self.yellowlight.setText(_translate("MainWindow", "黄灯"))
@@ -448,6 +436,17 @@ class Ui_MainWindow(object):
         self.timeLabel.setText(_translate("MainWindow", "登录时间"))
         self.tableLabel.setText(_translate("MainWindow", "当前工作台"))
         self.table.setText(_translate("MainWindow", "123"))
+        self.status.setTitle(_translate("MainWindow", "状态栏"))
+        self.scaleLabel.setText(_translate("MainWindow", "电子秤状态："))
+        self.printerLabel.setText(_translate("MainWindow", "默认打印机："))
+        self.cameraStatus.setText(_translate("MainWindow", "在线"))
+        self.cameraLabel.setText(_translate("MainWindow", "摄像头状态："))
+        self.gunStatus.setText(_translate("MainWindow", "在线"))
+        self.scaleStatus.setText(_translate("MainWindow", "在线"))
+        self.defaultPrinter.setText(_translate("MainWindow", "更改默认打印机"))
+        self.logout.setText(_translate("MainWindow", "退出登录"))
+        self.printerStatus.setText(_translate("MainWindow", "在线"))
+        self.gunLabel.setText(_translate("MainWindow", "扫描枪状态："))
         self.tsmiHomePage.setTitle(_translate("MainWindow", "主页"))
         self.tsmiPrinterSet.setTitle(_translate("MainWindow", "打印设置"))
         self.tsmiRePrint.setTitle(_translate("MainWindow", "补打功能"))
@@ -464,6 +463,5 @@ class Ui_MainWindow(object):
         self.tsmi_homePage.setText(_translate("MainWindow", "首页"))
         self.actionforward.setText(_translate("MainWindow", "前进"))
         self.actionbackward.setText(_translate("MainWindow", "返回"))
-
 
 import view.resource_main

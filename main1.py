@@ -2,17 +2,22 @@ import os
 import numpy as np
 from PIL import Image
 import sys
+import sip
 import time
 import pymysql
 import cv2
 import math
 import socket
 import threading
+import pyttsx3.drivers
+from PyQt5.QtNetwork import *
+from PyQt5.QtWebChannel import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from PyQt5.QtWebKit import *
 from PyQt5.QtPrintSupport import *
-from PyQt5.QtWebEngineWidgets import *
-# from PyQt5.QtWebKitWidgets import *
+# from PyQt5.QtWebEngineWidgets import *
+from PyQt5.QtWebKitWidgets import *
 from PyQt5.QtWidgets import *
 from live import VideoBox
 from view.login import *
@@ -23,23 +28,54 @@ from aip import AipSpeech
 import pyttsx3
 import requests
 
-# import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 
 Relay_Ch1 = 26
 Relay_Ch2 = 20
 Relay_Ch3 = 21
 
-# GPIO.setwarnings(False)
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(Relay_Ch1, GPIO.OUT)
-# GPIO.setup(Relay_Ch2, GPIO.OUT)
-# GPIO.setup(Relay_Ch3, GPIO.OUT)
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(Relay_Ch1, GPIO.OUT)
+GPIO.setup(Relay_Ch2, GPIO.OUT)
+GPIO.setup(Relay_Ch3, GPIO.OUT)
 
 APP_ID = '16437607'
 API_KEY = 'l6Ib6bauea3tdAQeEkoHF22Q'
 SECRET_KEY = 'yvmk3rWwKpjzYcBaF0oCkhGFHvn6GsMT'
 
 client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
+
+
+class checkStatus(threading.Thread):
+    def __init__(self):
+        super(checkStatus, self).__init__()
+
+    def run(self):
+        connectFile = os.popen('lsusb')
+        list = connectFile.readlines()
+        for i in range(len(list)):
+            print(list[i])
+            if list[i].find('printer1') != -1:
+                self.printer1 = "条码打印机已连接"
+            if list[i].find('printer2') != -1:
+                self.printer2 = "发票打印机已连接"
+            if list[i].find('Webcam') != -1:
+                self.camera = "摄像头已连接"
+                mainWindow.cameraStatus.setText("在线")
+                print("online")
+            else:
+                mainWindow.cameraStatus.setText("离线")
+            if list[i].find('gun') != -1:
+                self.gun = "扫描枪已连接"
+                mainWindow.gunStatus.setText("在线")
+            else:
+                mainWindow.gunStatus.setText("离线")
+            if list[i].find('scale') != -1:
+                self.scale = "电子秤已连接"
+                mainWindow.scaleStatus.setText("在线")
+            else:
+                mainWindow.scaleStatus.setText("离线")
 
 
 class speakWord(threading.Thread):
@@ -55,41 +91,41 @@ class speakWord(threading.Thread):
         os.system('omxplayer auido.mp3')
 
 
-# class lightCheck(threading.Thread):
-#     def __init__(self):
-#         super(lightCheck, self).__init__()
-#
-#     def run(self):
-#         try:
-#             GPIO.output(Relay_Ch1, GPIO.LOW)
-#             print("Channel 1:The Common Contact is access to the Normal Open Contact!")
-#             time.sleep(0.5)
-#
-#             GPIO.output(Relay_Ch1, GPIO.HIGH)
-#             print("Channel 1:The Common Contact is access to the Normal Closed Contact!\n")
-#             time.sleep(0.5)
-#
-#             # Control the Channel 2
-#             GPIO.output(Relay_Ch2, GPIO.LOW)
-#             print("Channel 2:The Common Contact is access to the Normal Open Contact!")
-#             time.sleep(0.5)
-#
-#             GPIO.output(Relay_Ch2, GPIO.HIGH)
-#             print("Channel 2:The Common Contact is access to the Normal Closed Contact!\n")
-#             time.sleep(0.5)
-#
-#             # Control the Channel 3
-#             GPIO.output(Relay_Ch3, GPIO.LOW)
-#             print("Channel 3:The Common Contact is access to the Normal Open Contact!")
-#             time.sleep(0.5)
-#
-#             GPIO.output(Relay_Ch3, GPIO.HIGH)
-#             print("Channel 3:The Common Contact is access to the Normal Closed Contact!\n")
-#             time.sleep(0.5)
-#             return True
-#         except Exception as e:
-#             print(e)
-#             return False
+class lightCheck(threading.Thread):
+    def __init__(self):
+        super(lightCheck, self).__init__()
+
+    def run(self):
+        try:
+            GPIO.output(Relay_Ch1, GPIO.LOW)
+            print("Channel 1:The Common Contact is access to the Normal Open Contact!")
+            time.sleep(0.5)
+
+            GPIO.output(Relay_Ch1, GPIO.HIGH)
+            print("Channel 1:The Common Contact is access to the Normal Closed Contact!\n")
+            time.sleep(0.5)
+
+            # Control the Channel 2
+            GPIO.output(Relay_Ch2, GPIO.LOW)
+            print("Channel 2:The Common Contact is access to the Normal Open Contact!")
+            time.sleep(0.5)
+
+            GPIO.output(Relay_Ch2, GPIO.HIGH)
+            print("Channel 2:The Common Contact is access to the Normal Closed Contact!\n")
+            time.sleep(0.5)
+
+            # Control the Channel 3
+            GPIO.output(Relay_Ch3, GPIO.LOW)
+            print("Channel 3:The Common Contact is access to the Normal Open Contact!")
+            time.sleep(0.5)
+
+            GPIO.output(Relay_Ch3, GPIO.HIGH)
+            print("Channel 3:The Common Contact is access to the Normal Closed Contact!\n")
+            time.sleep(0.5)
+            return True
+        except Exception as e:
+            print(e)
+            return False
 
 
 class SignWindow(QMainWindow, Ui_signup):
@@ -250,6 +286,11 @@ class LoginWindow(QMainWindow, Ui_login):
         self.signWindow = SignWindow()
         self.setupUi(self)
         self.ID = 0
+        self.printer1 = "条码打印机未连接"
+        self.printer2 = "发票打印机未连接"
+        self.camera = "摄像头未连接"
+        self.gun = "扫描枪未连接"
+        self.scale = "电子秤未连接"
         self.loginBtn.clicked.connect(self.login_click)
         self.faceBtn.clicked.connect(self.face_recognition)
         self.faceRegister.clicked.connect(self.register)
@@ -277,12 +318,41 @@ class LoginWindow(QMainWindow, Ui_login):
         else:
             QMessageBox.information(self, "错误", "用户名和密码不能为空", QMessageBox.Ok)
 
+    def checkDevice(self):
+        connectFile = os.popen('lsusb')
+        list = connectFile.readlines()
+        for i in range(len(list)):
+            print(list[i])
+            if list[i].find('printer1') != -1:
+                self.printer1 = "条码打印机已连接"
+            if list[i].find('printer2') != -1:
+                self.printer2 = "发票打印机已连接"
+            if list[i].find('Webcam') != -1:
+                self.camera = "摄像头已连接"
+                mainWindow.cameraStatus.setText("在线")
+                print("online")
+            else:
+                mainWindow.cameraStatus.setText("离线")
+            if list[i].find('gun') != -1:
+                self.gun = "扫描枪已连接"
+                mainWindow.gunStatus.setText("在线")
+            else:
+                mainWindow.gunStatus.setText("离线")
+            if list[i].find('scale') != -1:
+                self.scale = "电子秤已连接"
+                mainWindow.scaleStatus.setText("在线")
+            else:
+                mainWindow.scaleStatus.setText("离线")
+
     def loginDone(self, id):
         hostname = socket.gethostname()
         # engine = pyttsx3.init()
         # engine.setProperty("voice",
         # "zh+f2")
-        content = id + ", 欢迎登录" + hostname + "号工作台，设备自检中，信号灯工作正常,1号打印机已联机，2号打印机未联机，称重设备未联机，祝你工作愉快"
+        self.checkDevice()
+        status = self.printer1 + ',' + self.printer2 + ',' + self.camera + ',' + self.gun + ',' + self.scale
+        content = id + ", 欢迎登录" + hostname + "号工作台，设备自检中，" + status
+        print(content)
         speak = speakWord(content)
         speak.start()
         # self.myCursor.close()
@@ -482,29 +552,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.printer = QPrinter()
 
         # Windows
-        self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
-        self.browserLayout.setObjectName("BrowserLayout")
-        self.browser = QWebEngineView()
-        self.url = 'https://www.baidu.com/'#'http://rtxtst.domain.cn:4200'  # http://192.168.0.20:4200
-        # 指定打开界面的 URL
-        self.browser.setUrl(QUrl(self.url))
-        self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
+        # self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
+        # self.browserLayout.setObjectName("BrowserLayout")
+        # self.browser = QWebEngineView()
+        # self.url = 'https://www.baidu.com/'#'http://rtxtst.domain.cn:4200'  # http://192.168.0.20:4200
+        # # 指定打开界面的 URL
+        # self.browser.setUrl(QUrl(self.url))
+        # self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
         # self.engine = pyttsx3.init()
         # self.engine.setProperty("voice",
         # "zh+f2")
 
         # 树莓派
-        # self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
-        # self.browserLayout.setObjectName("BrowserLayout")
-        # self.browser = QWebView()
-        # self.url = 'http://rtxwms.domain.com:4200'
-        # # 指定打开界面的 URL
-        # self.browser.setUrl(QUrl(self.url))
-        # self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
+        self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
+        self.browserLayout.setObjectName("BrowserLayout")
+        self.browser = QWebView()
+        self.url = 'http://rtxwms.domain.com:4200'
+        # 指定打开界面的 URL
+        self.browser.setUrl(QUrl(self.url))
+        self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
 
-        # self.yellowlight.clicked.connect(self.setYellow)
-        # self.greenlight.clicked.connect(self.setGreen)
-        # self.redlight.clicked.connect(self.setRed)
+        self.yellowlight.clicked.connect(self.setYellow)
+        self.greenlight.clicked.connect(self.setGreen)
+        self.redlight.clicked.connect(self.setRed)
         self.live.clicked.connect(self.setLive)
         self.timer_camera.timeout.connect(self.show_camera)
         self.start.clicked.connect(self.setRecord)
@@ -520,9 +590,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionforward.triggered.connect(self.browser.forward)
         self.actionbackward.triggered.connect(self.browser.back)
         self.logout.clicked.connect(self.logout_click)
-        # self.lightTest.clicked.connect(self.lightCheck)
-        self.printerTest.clicked.connect(self.printerTest_clicked)
-        self.internetTest.clicked.connect(self.isConnect)
 
     def printerTest_clicked(self):
         printDialog = QPrintDialog(self.printer, self)
@@ -553,8 +620,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stuffPhoto.close()
         jpg = QtGui.QPixmap("stuff.jpg").scaled(self.stuffPhoto.width(), self.stuffPhoto.height())
         self.stuffPhoto.setPixmap(jpg)
-        # light = lightCheck()
-        # light.start()
+        light = lightCheck()
+        light.start()
+        device = checkStatus()
+        device.start()
 
     def isConnect(self):
         try:
@@ -594,6 +663,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     #     except Exception as e:
     #         print(e)
     #         self.lightStatus.setText("离线")
+    #
 
     def Receipt(self):
         file_url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=0000026675&LPNid=X000000647&__format=html&&__pageoverflow=0&__overwrite=false"
@@ -608,11 +678,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.browser.setUrl(QUrl(file_url))
 
     def PageSet(self):
-        self.browser.page().print(self.printer, self.callback)
-        # self.printer.setOutputFormat(QPrinter.PdfFormat)
-        # self.printer.setOutputFileName('a.pdf')
-        # self.browser.print(self.printer)
-        # os.system("xdg-open a.pdf")
+        # self.browser.page().print(self.printer, self.callback)
+        self.printer.setOutputFormat(QPrinter.PdfFormat)
+        self.printer.setOutputFileName('a.pdf')
+        self.browser.print(self.printer)
+        os.system("xdg-open a.pdf")
 
     def callback(is_ok):
         if is_ok:
@@ -671,7 +741,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         frameSize = (640, 480)  # 指定窗口大小
         # # 创建 VideoWriter对象
         # now = time.strftime("%Y-%m-%d-%H_%M_%S", time.localtime(time.time()))
-        output = cv2.VideoWriter("/media/pi/BC42-6ACD/video/" + self.fileName, codec, fps, frameSize)
+        output = cv2.VideoWriter(self.fileName, codec, fps, frameSize)
         if not (((len(sys.argv) == 2) and (self.cap.open(str(sys.argv[1]))))
                 or (self.cap.open(self.CAM_NUM))):
             print("ERROR：No video file specified or camera connected.")
@@ -680,7 +750,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         while self.cap.isOpened():
             if self.switch:
                 ret, frame = self.cap.read()
-
+                cv2.putText(frame, self.fileName, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (55, 255, 155), 2)
                 start_t = cv2.getTickCount()
                 output.write(frame)
                 stop_t = ((cv2.getTickCount() - start_t) / cv2.getTickFrequency()) * 1000
@@ -733,23 +803,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # if self.x ==320:
         #     self.label_show_camera.raise_()
 
-    # def setYellow(self):
-    #     if self.yellowlight.isChecked():
-    #         GPIO.output(Relay_Ch1, GPIO.LOW)
-    #     else:
-    #         GPIO.output(Relay_Ch1, GPIO.HIGH)
-    #
-    # def setRed(self):
-    #     if self.redlight.isChecked():
-    #         GPIO.output(Relay_Ch3, GPIO.LOW)
-    #     else:
-    #         GPIO.output(Relay_Ch3, GPIO.HIGH)
-    #
-    # def setGreen(self):
-    #     if self.greenlight.isChecked():
-    #         GPIO.output(Relay_Ch2, GPIO.LOW)
-    #     else:
-    #         GPIO.output(Relay_Ch2, GPIO.HIGH)
+    def setYellow(self):
+        if self.yellowlight.isChecked():
+            GPIO.output(Relay_Ch1, GPIO.LOW)
+        else:
+            GPIO.output(Relay_Ch1, GPIO.HIGH)
+
+    def setRed(self):
+        if self.redlight.isChecked():
+            GPIO.output(Relay_Ch3, GPIO.LOW)
+        else:
+            GPIO.output(Relay_Ch3, GPIO.HIGH)
+
+    def setGreen(self):
+        if self.greenlight.isChecked():
+            GPIO.output(Relay_Ch2, GPIO.LOW)
+        else:
+            GPIO.output(Relay_Ch2, GPIO.HIGH)
 
     # class Thread(QThread):
     #     show_signal = pyqtSignal(QImage)
