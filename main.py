@@ -34,7 +34,7 @@ import pyttsx3
 
 os.environ['NLS_LANG'] = 'SIMPLIFIED CHINESE_CHINA.UTF8'
 BASE_DIR = os.path.dirname(__file__)
-host = '192.168.1.29'
+host = '47.101.60.18'
 username = 'user'
 password = 'root'
 file = '1.txt'
@@ -132,7 +132,7 @@ class SignWindow(QMainWindow, Ui_signup):
         super().__init__()
         self.setupUi(self)
         self.photoShow = ""
-        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.connection = pymysql.connect("47.101.60.18", "root", "root", "login")
         self.myCursor = self.connection.cursor()
 
         self.signBtn.clicked.connect(self.signup)
@@ -280,7 +280,7 @@ class LoginWindow(QMainWindow, Ui_login):
     def __init__(self):
         super().__init__()
 
-        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.connection = pymysql.connect("47.101.60.18", "root", "root", "login")
         self.myCursor = self.connection.cursor()
         self.signWindow = SignWindow()
         self.setupUi(self)
@@ -435,7 +435,7 @@ class SettingWindow(QWidget, Ui_setting):
         super().__init__()
         self.setupUi(self)
 
-        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.connection = pymysql.connect("47.101.60.18", "root", "root", "login")
         self.myCursor = self.connection.cursor()
         self.check()
 
@@ -521,7 +521,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setting = SettingWindow()
 
-        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.connection = pymysql.connect("47.101.60.18", "root", "root", "login")
         self.myCursor = self.connection.cursor()
         # Oracle DB
 
@@ -783,8 +783,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         while self.cap.isOpened():
             if self.switch:
                 ret, frame = self.cap.read()
-                cv2.putText(frame, self.subtitle + " " + self.now, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                            (55, 255, 155), 2)
+                cv2.putText(frame, self.subtitle + " " + self.now, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8,
+                            (55, 255, 155), 1)
                 start_t = cv2.getTickCount()
                 output.write(frame)
                 stop_t = ((cv2.getTickCount() - start_t) / cv2.getTickFrequency()) * 1000
@@ -793,25 +793,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print("Quit Process ")
                 break
 
-    # print("The display and video write tasks take {} ms".format(stop_t))
-    # def setTable(self):
-    #     sql = "select distinct aa.rtxtaskgrp,aa.addwho,(select sum(b.qty) from  taskdetail b where  b.rtxtaskgrp=aa.rtxtaskgrp) 已拣货件数,(select sum(c.checkedqty) from  rtx_checkdetail c where  c.taskgroup=aa.rtxtaskgrp and status='9') 已复核件数  from taskdetail aa where aa.rtxtaskgrp is not null and addwho in('114','115') and aa.status='9'"
-    #     self.curs.execute(sql)
-    #     k = 0
-    #     # count = len(list(self.curs))
-    #     for i in self.curs:
-    #         print("----------", i)
-    #         w = 0
-    #         for j in i:
-    #             # 这里是将int类型转成string类型，方便后面文本设置
-    #             if type(j) == int:
-    #                 newItem = QTableWidgetItem(str(j))
-    #             else:
-    #                 newItem = QTableWidgetItem(j)
-    #             # 根据循环标签一次对table中的格子进行设置
-    #             self.workTabel.setItem(k, w, newItem)
-    #             w += 1
-    #         k += 1
 
     def setLive(self):
         if not self.timer_camera.isActive():

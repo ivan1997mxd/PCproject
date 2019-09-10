@@ -16,7 +16,6 @@ from PyQt5.QtNetwork import *
 from PyQt5.QtWebChannel import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from PyQt5.QtWebKit import *
 from PyQt5.QtPrintSupport import *
 # from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtWebKitWidgets import *
@@ -28,9 +27,6 @@ from view.signup import *
 from concurrent.futures import ThreadPoolExecutor
 from view.mainwindowUI import Ui_MainWindow
 from aip import AipSpeech
-# import pyttsx3
-# import pyttsx3.drivers
-# import pyttsx3.drivers.sapi5
 import requests
 
 import RPi.GPIO as GPIO
@@ -58,6 +54,34 @@ username = 'user'
 password = 'root'
 file = '1.txt'
 port = 21
+filePath = os.path.dirname(os.path.abspath(__file__))
+
+
+class Worker(QThread):
+    sinOut = pyqtSignal(str)  # 自定义信号，执行run()函数时，从相关线程发射此信号
+
+    def __init__(self, url):
+        super(Worker, self).__init__()
+        self.working = True
+        self.done = ""
+        self.url = url
+
+    def __del__(self):
+        self.working = False
+        self.wait()
+
+    def run(self):
+        while self.working:
+            response = requests.get(self.url)
+            html = response.text
+            soup = BeautifulSoup(html, 'html.parser')
+            number = soup.find("label", id="count").get_text()
+            self.done = number.split('/')[1]
+            # 发出信号
+            print(self.done)
+            self.sinOut.emit(self.done)
+            # 线程休眠2秒
+            self.sleep(2)
 
 
 def ftpconnect(host, port, username, password):
@@ -203,7 +227,7 @@ class SignWindow(QMainWindow, Ui_signup):
         super().__init__()
         self.setupUi(self)
         self.photoShow = ""
-        self.connection = pymysql.connect("localhost", "root", "root", "login")
+        self.connection = pymysql.connect("127.0.0.1", "root", "root", "login")
         self.myCursor = self.connection.cursor()
 
         self.signBtn.clicked.connect(self.signup)
@@ -416,9 +440,6 @@ class LoginWindow(QMainWindow, Ui_login):
 
     def loginDone(self, id):
         hostname = socket.gethostname()
-        # engine = pyttsx3.init()
-        # engine.setProperty("voice",
-        # "zh+f2")
         self.checkDevice()
         status = self.printer1 + ',' + self.printer2 + ',' + self.camera + ',' + self.gun + ',' + self.scale
         content = id + ", 欢迎登录" + hostname + "号工作台，设备自检中，" + status
@@ -491,7 +512,7 @@ class LoginWindow(QMainWindow, Ui_login):
                 id, confidence = recognizer.predict(gray[y:y + h, x:x + w])
 
                 # Check if confidence is less them 100 ==> "0" is perfect match
-                if confidence < 68:
+                if confidence < 65:
                     index = ids.index(id)
                     self.ID = id
                     id = names[index]
@@ -499,6 +520,7 @@ class LoginWindow(QMainWindow, Ui_login):
                     reply = QMessageBox.information(self, "人脸识别成功,", "用户：" + id + ",请问是否要以此账号登录",
                                                     QMessageBox.Yes | QMessageBox.No)
                     if reply == QMessageBox.Yes:
+                        print(id, self.ID, confidence)
                         result = False
 
                     else:
@@ -520,7 +542,8 @@ class LoginWindow(QMainWindow, Ui_login):
         print("\n [INFO] Exiting Program and cleanup stuff")
         cam.release()
         cv2.destroyAllWindows()
-        self.loginDone(id)
+        if id != 0:
+            self.loginDone(id)
 
 
 class SettingWindow(QWidget, Ui_setting):
@@ -601,16 +624,17 @@ class SettingWindow(QWidget, Ui_setting):
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
-    toHtmlFinished = pyqtSignal()
 
     def __init__(self):
         super().__init__()
+        self.setWindowTitle("仓库管理系统")
         self.videoWidget = VideoBox()
         self.setupUi(self)
         self.setting = SettingWindow()
 
         self.connection = pymysql.connect("localhost", "root", "root", "login")
         self.myCursor = self.connection.cursor()
+        # Oracle DB
 
         self.timer_camera = QtCore.QTimer()
         self.cap = cv2.VideoCapture()
@@ -619,7 +643,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.x = 0
         self.subtitle = ""
         self.switch = True
-        self.printer = QPrinter()
 
         # Windows
         # self.browserLayout = QtWidgets.QGridLayout(self.browserWindow)
@@ -643,6 +666,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.browserLayout.addWidget(self.browser, 1, 1, 1, 1)
         self.hostname = socket.gethostname()
 
+        self.printer = QPrinter()
+        self.html = ""
+        self.hostname = socket.gethostname()
         self.yellowlight.clicked.connect(self.setYellow)
         self.greenlight.clicked.connect(self.setGreen)
         self.redlight.clicked.connect(self.setRed)
@@ -662,20 +688,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.actionbackward.triggered.connect(self.browser.back)
         self.logout.clicked.connect(self.logout_click)
         self.ftp = ftpconnect(host, port, username, password)
+        self.browser.urlChanged.connect(self.urlChange)
         self.startM.clicked.connect(self.StartMission)
         self.endM.clicked.connect(self.EndMission)
         self.endM.setEnabled(False)
+        self.progressBar.setValue(0)
+        self.MyUrl = ""
+        self.total = 0
+        self.done = 0
+
+    def checkProcess(self, done):
+        self.done = int(done)
+        if self.done != 0:
+            percent = (self.done // self.total) * 100
+            print(percent)
+            self.progressBar.setValue(percent)
+            self.doneNum.setText(done)
+            if self.done == self.total:
+                self.thread.__del__()
+                print("it is finished!")
 
     def EndMission(self):
         self.setStop()
-        url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=" + self.orderKey + "&LPNid=" + self.expresskey + "&__format=html&&__pageoverflow=0&__overwrite=false"
+        url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=" + self.orderKey + "&LPNid=" + self.expressKey + "&__format=html&&__pageoverflow=0&__overwrite=false"
         # url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=0000026675&LPNid=X000000647&__format=html&&__pageoverflow=0&__overwrite=false"
         printWindow.webview.load(QUrl(url))
         # printWindow.show()
         printWindow.webview.loadFinished.connect(self.printPage)
         self.startM.setEnabled(True)
         self.endM.setEnabled(False)
-        # self.browser.page().print(self.printer, self.callBack)
+        self.startM.setText("开始任务")
+        self.totoalNum.setText("未知")
+        self.doneNum.setText("未知")
+        self.orderkeyNum.setText("未知")
+        self.expresskeyNum.setText("未知")
+        self.progressBar.setValue(0)
 
     def printPage(self):
         printWindow.webview.page().print(self.printer, self.callBack)
@@ -683,17 +730,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def StartMission(self):
         self.orderKey = self.browser.selectedText()
         if self.orderKey != "":
-            url = "http://rtxwms.domain.com:8180/rtxextend/MainOrderSerlet?whseid=wmwhse1&orderkey=" + self.orderKey + "&opeuser=" + self.name.text()
-            response = requests.get(url)
+            self.progressBar.setValue(0)
+            self.MyUrl = "http://rtxwms.domain.com:8180/rtxextend/MainOrderSerlet?whseid=wmwhse1&orderkey=" + self.orderKey + "&opeuser=" + self.name.text()
+            response = requests.get(self.MyUrl)
             html = response.text
             soup = BeautifulSoup(html, 'html.parser')
-            self.expresskey = soup.find("label", id="lbl_expresskey").get_text()
-            self.subtitle = self.name.text() + " " + self.table.text() + " " + self.orderKey + " " + self.expresskey
+            self.expressKey = soup.find("label", id="lbl_expresskey").get_text()
+            self.orderKey = soup.find("label", id="lbl_orderkey").get_text()
+            self.subtitle = self.name.text() + " " + self.table.text() + " " + self.orderKey + " " + self.expressKey
+            number = soup.find("label", id="count").get_text()
+            total = number.split('/')[2]
+            done = number.split('/')[1]
+            self.total = int(total)
+            self.totoalNum.setText(total)
+            self.doneNum.setText(done)
+            self.expresskeyNum.setText(self.expressKey)
+            self.orderkeyNum.setText(self.orderKey)
             self.endM.setEnabled(True)
             self.startM.setEnabled(False)
             self.startM.setText("任务进行中")
             print(self.subtitle)
             self.startRecord()
+        else:
+            QMessageBox.information(self, "消息", "请先选取订单号！", QMessageBox.Ok)
 
     def printerTest_clicked(self):
         printDialog = QPrintDialog(self.printer, self)
@@ -709,7 +768,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def check(self):
         print("Main window opened!")
-
         id = window.ID
         sql = "SELECT * FROM users where user_id=%s"
         self.myCursor.execute(sql, [id])
@@ -725,50 +783,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         stuffPhoto.close()
         jpg = QtGui.QPixmap("stuff.jpg").scaled(self.stuffPhoto.width(), self.stuffPhoto.height())
         self.stuffPhoto.setPixmap(jpg)
+        self.printerStatus.setText(self.printer.printerName())
         light = lightCheck()
         light.start()
         device = checkStatus()
         device.start()
-
-    def isConnect(self):
-        try:
-            html = requests.get("https://www.baidu.com/", timeout=2)
-        except:
-            self.internetStatus.setText("离线")
-        self.internetStatus.setText("在线")
-
-    # def lightCheck(self):
-    #     try:
-    #         GPIO.output(Relay_Ch1, GPIO.LOW)
-    #         print("Channel 1:The Common Contact is access to the Normal Open Contact!")
-    #         time.sleep(0.5)
-    #
-    #         GPIO.output(Relay_Ch1, GPIO.HIGH)
-    #         print("Channel 1:The Common Contact is access to the Normal Closed Contact!\n")
-    #         time.sleep(0.5)
-    #
-    #         # Control the Channel 2
-    #         GPIO.output(Relay_Ch2, GPIO.LOW)
-    #         print("Channel 2:The Common Contact is access to the Normal Open Contact!")
-    #         time.sleep(0.5)
-    #
-    #         GPIO.output(Relay_Ch2, GPIO.HIGH)
-    #         print("Channel 2:The Common Contact is access to the Normal Closed Contact!\n")
-    #         time.sleep(0.5)
-    #
-    #         # Control the Channel 3
-    #         GPIO.output(Relay_Ch3, GPIO.LOW)
-    #         print("Channel 3:The Common Contact is access to the Normal Open Contact!")
-    #         time.sleep(0.5)
-    #
-    #         GPIO.output(Relay_Ch3, GPIO.HIGH)
-    #         print("Channel 3:The Common Contact is access to the Normal Closed Contact!\n")
-    #         time.sleep(0.5)
-    #         self.lightStatus.setText("在线")
-    #     except Exception as e:
-    #         print(e)
-    #         self.lightStatus.setText("离线")
-    #
+        self.setLive()
 
     def Receipt(self):
         file_url = "http://rtxwms.domain.com:8580/birt/output?__report=report/Rtx_B2Byxhbq_Tag_New.rptdesign&__showtitle=false&__asattachment=false&__offsetMin=0&__locale=zh&orderkey=0000026675&LPNid=X000000647&__format=html&&__pageoverflow=0&__overwrite=false"
@@ -791,9 +811,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # self.browser.print(self.printer)
         # os.system("xdg-open a.pdf")
 
-    def callback(is_ok):
-        if is_ok:
-            print('printing finished')
+    def callBack(self, x):
+        if x:
+            print('printing ok ' + str(x))
             QMessageBox.information(self, "消息", "打印完成", QMessageBox.Ok)
         else:
             print('printing error')
@@ -817,7 +837,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def setStop(self):
         self.switch = False
-        uploadfile(self.ftp, self.now + '.avi', self.now + '.avi')
+        uploadfile(self.ftp, self.now, filePath + "\\" + self.now + '.avi')
         self.subtitle = ""
 
     def setOpen(self):
@@ -829,12 +849,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.videoWidget.set_video(file_, VideoBox.VIDEO_TYPE_OFFLINE, False)
             self.videoWidget.show()
 
-    # def setRecord(self):
-    #     value, okPressed = QInputDialog.getText(self, "输入标题", "请输入视频名称(只有英文):", QLineEdit.Normal, "myVideo.avi")
-    #     if okPressed and value != '':
-    #         self.fileName = value
-    #         self.start.setEnabled(False)
-    #         self.startRecord()
     def speakWord(self):
         speak = speakWord("加油加油！已经工作了30秒了")
         speak.start()
@@ -854,14 +868,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 or (self.cap.open(self.CAM_NUM))):
             print("ERROR：No video file specified or camera connected.")
             return -1
-        timer = threading.Timer(30, self.speakWord)
-        timer.start()
+        self.thread = Worker(self.MyUrl)
+        self.thread.sinOut.connect(self.checkProcess)
+        self.thread.start()
 
         while self.cap.isOpened():
             if self.switch:
                 ret, frame = self.cap.read()
-                cv2.putText(frame, self.subtitle + " " + self.now, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                            (55, 255, 155), 2)
+                cv2.putText(frame, self.subtitle + " " + self.now, (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.8,
+                            (55, 255, 155), 1.5)
                 start_t = cv2.getTickCount()
                 output.write(frame)
                 stop_t = ((cv2.getTickCount() - start_t) / cv2.getTickFrequency()) * 1000
@@ -882,7 +897,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             #                     pass
             else:
                 self.timer_camera.start(30)
-                self.start.setEnabled(True)
                 self.live.setText(u'关闭相机')
         else:
             self.timer_camera.stop()
@@ -893,7 +907,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def show_camera(self):
         os.system(
-           "/home/pi/mjpg-streamer/mjpg-streamer-experimental/start.sh")
+            "/home/pi/mjpg-streamer/mjpg-streamer-experimental/start.sh")
         flag, self.image = self.cap.read()
         # face = self.face_detect.align(self.image)
         # if face:
